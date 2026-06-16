@@ -75,24 +75,25 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--text)
 
 /* ─── TOPBAR ──────────────────────────────────────────────── */
 .topbar{flex-shrink:0;background:var(--surf);border-bottom:1px solid var(--border);
-  padding:0 12px;height:52px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-.logo{font-size:1.1rem;font-weight:800;letter-spacing:-.02em;flex-shrink:0}
+  padding:0 12px;height:52px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.logo{font-size:1.05rem;font-weight:800;letter-spacing:-.02em;flex-shrink:0}
 .logo em{color:var(--amber);font-style:normal}
 .topbar-right{display:flex;align-items:center;gap:5px;flex-shrink:0}
 .theme-toggle{background:var(--lift);border:1px solid var(--border);border-radius:8px;
   width:30px;height:30px;display:flex;align-items:center;justify-content:center;
   font-size:.95rem;cursor:pointer;color:var(--text);padding:0;flex-shrink:0}
 .theme-toggle:active{opacity:.7}
-#user-email{font-size:.68rem;color:var(--muted);max-width:72px;
+/* hide progressively on narrower screens */
+#user-email{font-size:.68rem;color:var(--muted);max-width:80px;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:1}
-#signin-btn{padding:5px 9px!important;font-size:.7rem!important}
-#signout-btn{padding:5px 9px!important;font-size:.7rem!important}
+#signin-btn{padding:5px 9px!important;font-size:.7rem!important;white-space:nowrap;flex-shrink:0}
+#signout-btn{padding:5px 9px!important;font-size:.7rem!important;flex-shrink:0}
 .stat-chips{display:flex;gap:4px;flex-shrink:0}
-@media(max-width:360px){
-  #user-email{display:none}
-  .logo{font-size:.95rem}
-  #conn-status{display:none}
-}
+/* hide less important items as screen shrinks — always keep signin-btn visible */
+@media(max-width:480px){ #user-email{display:none} }
+@media(max-width:420px){ .clock{display:none} }
+@media(max-width:380px){ #conn-status{display:none}; .stat-chips{display:none} }
+@media(max-width:340px){ .logo{font-size:.88rem} }
 
 /* ─── ONBOARDING MODAL ────────────────────────────────────── */
 .onboard-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;
@@ -407,41 +408,6 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--text)
 </head>
 <body>
 
-<!-- BACKUP POPUP -->
-<div id="backup-overlay" class="onboard-overlay">
-  <div class="onboard-card" style="max-width:340px">
-    <div style="text-align:center;font-size:2rem;margin-bottom:10px">☁️</div>
-    <h2 style="text-align:center;margin-bottom:10px">Back up to Google?</h2>
-    <p style="font-size:.82rem;color:var(--text2);line-height:1.6;margin-bottom:6px">
-      Right now your data lives <strong style="color:var(--amber)">only on this device</strong>.
-      If you clear your browser or switch devices, it's gone.
-    </p>
-    <p style="font-size:.82rem;color:var(--text2);line-height:1.6;margin-bottom:16px">
-      Signing in with Google backs everything up to the cloud — for free — and lets you
-      open the same data from any phone or laptop.
-    </p>
-    <div style="background:var(--lift);border-radius:8px;padding:12px;margin-bottom:16px;font-size:.78rem;color:var(--muted)">
-      <div style="margin-bottom:5px">✅ Your existing data is kept — nothing is deleted</div>
-      <div style="margin-bottom:5px">✅ Works with any Google account</div>
-      <div style="margin-bottom:5px">✅ We only access what you put in this app</div>
-      <div>✅ You can still use the app without signing in</div>
-    </div>
-    <button class="btn btn-amber btn-full" style="margin-bottom:8px" onclick="confirmBackupSignIn()">
-      <svg width="14" height="14" viewBox="0 0 48 48" style="vertical-align:-2px;margin-right:6px">
-        <path fill="#EA4335" d="M24 9.5c3.4 0 6.4 1.2 8.8 3.5l6.5-6.5C35.1 2.6 29.9.5 24 .5 14.6.5 6.5 5.9 2.6 14l7.6 5.9C12.1 13.6 17.6 9.5 24 9.5z"/>
-        <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.4 5.7c4.3-4 6.8-9.9 6.8-17.4z"/>
-        <path fill="#FBBC05" d="M10.2 28.1c-.5-1.5-.8-3.1-.8-4.6s.3-3.1.8-4.6l-7.6-5.9C1 16.4 0 20.1 0 24s1 7.6 2.6 10.9l7.6-5.9z"/>
-        <path fill="#34A853" d="M24 47.5c5.9 0 10.8-2 14.4-5.4l-7.4-5.7c-2 1.4-4.6 2.3-7 2.3-6.4 0-11.9-4.1-13.8-9.7l-7.6 5.9C6.5 42.1 14.6 47.5 24 47.5z"/>
-      </svg>
-      Yes, sign in with Google
-    </button>
-    <button class="btn btn-ghost btn-full" onclick="document.getElementById('backup-overlay').classList.remove('show')">
-      No thanks, stay local
-    </button>
-    <div id="backup-msg" class="status-msg" style="margin-top:8px"></div>
-  </div>
-</div>
-
 <!-- MERGE DIALOG — shown when both local and cloud have data after sign-in -->
 <div id="merge-overlay" class="onboard-overlay">
   <div class="onboard-card" style="max-width:360px">
@@ -470,15 +436,15 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--text)
   <div class="logo">Hadi<em>r</em> · Students</div>
   <div class="topbar-right">
     <div class="stat-chips">
-      <span class="chip chip-in"  id="chip-in">0</span>
-      <span class="chip chip-out" id="chip-out">0</span>
+      <span class="chip chip-in"  id="chip-in">0 in</span>
+      <span class="chip chip-out" id="chip-out">0 out</span>
     </div>
     <span class="clock" id="clock"></span>
     <span class="clock" id="conn-status" style="color:var(--muted)">● Connecting</span>
     <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
     <button class="help-btn" onclick="showOnboard()" title="Help">?</button>
     <span id="user-email" style="font-size:.7rem;color:var(--muted);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
-    <button class="btn btn-amber" id="signin-btn" style="padding:5px 10px;font-size:.72rem" onclick="showBackupPopup()">
+    <button class="btn btn-amber" id="signin-btn" style="padding:5px 10px;font-size:.72rem" onclick="doLogin()">
       <svg width="12" height="12" viewBox="0 0 48 48" style="vertical-align:-2px;margin-right:4px"><path fill="#EA4335" d="M24 9.5c3.4 0 6.4 1.2 8.8 3.5l6.5-6.5C35.1 2.6 29.9.5 24 .5 14.6.5 6.5 5.9 2.6 14l7.6 5.9C12.1 13.6 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.4 5.7c4.3-4 6.8-9.9 6.8-17.4z"/><path fill="#FBBC05" d="M10.2 28.1c-.5-1.5-.8-3.1-.8-4.6s.3-3.1.8-4.6l-7.6-5.9C1 16.4 0 20.1 0 24s1 7.6 2.6 10.9l7.6-5.9z"/><path fill="#34A853" d="M24 47.5c5.9 0 10.8-2 14.4-5.4l-7.4-5.7c-2 1.4-4.6 2.3-7 2.3-6.4 0-11.9-4.1-13.8-9.7l-7.6 5.9C6.5 42.1 14.6 47.5 24 47.5z"/></svg>Backup
     </button>
     <button class="btn btn-ghost" id="signout-btn" style="padding:5px 10px;font-size:.7rem;display:none" onclick="doLogout()" data-i18n="setup_signout">Sign out</button>
@@ -610,30 +576,81 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--text)
         </button>
       </div>
 
-      <!-- Upload -->
+      <!-- People Portal — primary way to manage the list -->
       <div class="setup-card">
-        <h2 data-i18n="setup_import_title">📂 Import Employees</h2>
-        <p data-i18n="setup_import_desc">Upload an Excel (.xlsx) or CSV file. Data saves to the cloud — you only need to do this once. Only the Name column is required; ID and Department are optional.</p>
-        <div class="drop-zone" id="drop-zone">
-          <input type="file" id="file-input" accept=".xlsx,.xls,.csv" onchange="handleFile(this)">
-          <div class="dz-icon">📄</div>
-          <div class="dz-text"><span data-i18n-html="setup_drop">Drop file here or <strong>click to browse</strong></span><br>
-            <span style="font-size:.72rem" data-i18n="setup_filetypes">.xlsx, .xls, .csv supported</span></div>
+        <h2>🎓 Student List</h2>
+        <p style="margin-bottom:10px">Add people directly — no Excel needed. Type one name per line, or one at a time.</p>
+
+        <!-- Quick add single person -->
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <input class="srch" id="add-name" placeholder="Student name" style="flex:1;width:auto"
+                 onkeydown="if(event.key==='Enter')addOnePerson()">
+          <input class="srch" id="add-dept" placeholder="Class / Grade (optional)" style="flex:1;width:auto"
+                 onkeydown="if(event.key==='Enter')addOnePerson()">
+          <button class="btn btn-amber" onclick="addOnePerson()">+ Add</button>
         </div>
-        <div id="file-msg" class="status-msg"></div>
-        <div id="col-mapper" style="display:none">
-          <div class="col-mapper" style="margin-top:14px">
-            <div class="cm-field"><label data-i18n="setup_idcol">ID column (optional)</label>
-              <select class="cm-select" id="map-id"></select></div>
-            <div class="cm-field"><label data-i18n="setup_namecol">Name column *</label>
-              <select class="cm-select" id="map-name"></select></div>
-            <div class="cm-field"><label data-i18n="setup_deptcol">Department (optional)</label>
-              <select class="cm-select" id="map-dept"><option value="">— none —</option></select></div>
+
+        <!-- Paste bulk names -->
+        <details style="margin-bottom:10px">
+          <summary style="font-size:.78rem;color:var(--muted);cursor:pointer;padding:4px 0">
+            📋 Paste a list of names at once
+          </summary>
+          <div style="margin-top:8px">
+            <p style="font-size:.75rem;color:var(--muted);margin-bottom:6px">
+              Paste names below, one per line. Optionally add a tab or comma then dept/class after each name.
+            </p>
+            <textarea id="bulk-names" rows="6" placeholder="Budi Santoso&#10;Siti Rahayu, Marketing&#10;Ahmad Fauzi&#10;..."
+              style="width:100%;padding:9px;background:var(--lift);border:1px solid var(--border);
+              border-radius:8px;color:var(--text);font-family:inherit;font-size:.8rem;
+              resize:vertical;outline:none;line-height:1.5"></textarea>
+            <button class="btn btn-amber btn-full" style="margin-top:8px" onclick="addBulkNames()">
+              Import pasted names
+            </button>
           </div>
-          <button class="btn btn-amber" style="margin-top:12px;width:100%" onclick="confirmImport()" data-i18n="setup_save">
-            ✓ Save Employees
-          </button>
+        </details>
+
+        <!-- Current list -->
+        <div id="people-list-wrap">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <span id="people-count" style="font-size:.75rem;color:var(--muted)">0 people</span>
+            <button class="btn btn-ghost" style="padding:4px 10px;font-size:.72rem" onclick="clearPeopleList()">Clear all</button>
+          </div>
+          <div id="people-list" style="display:flex;flex-direction:column;gap:5px;max-height:240px;overflow-y:auto"></div>
         </div>
+
+        <div id="people-msg" class="status-msg"></div>
+
+        <!-- Advanced: Excel upload -->
+        <details style="margin-top:12px">
+          <summary style="font-size:.78rem;color:var(--muted);cursor:pointer;padding:4px 0">
+            📂 Upload Excel / CSV instead (advanced)
+          </summary>
+          <div style="margin-top:10px">
+            <p style="font-size:.75rem;color:var(--muted);margin-bottom:10px">
+              Upload a .xlsx or .csv file. First row must be headers. Only Name is required — ID and Dept/Class are optional.
+            </p>
+            <div class="drop-zone" id="drop-zone">
+              <input type="file" id="file-input" accept=".xlsx,.xls,.csv" onchange="handleFile(this)">
+              <div class="dz-icon">📄</div>
+              <div class="dz-text"><span data-i18n-html="setup_drop">Drop file here or <strong>click to browse</strong></span><br>
+                <span style="font-size:.72rem" data-i18n="setup_filetypes">.xlsx, .xls, .csv supported</span></div>
+            </div>
+            <div id="file-msg" class="status-msg"></div>
+            <div id="col-mapper" style="display:none">
+              <div class="col-mapper" style="margin-top:14px">
+                <div class="cm-field"><label data-i18n="setup_idcol">ID column (optional)</label>
+                  <select class="cm-select" id="map-id"></select></div>
+                <div class="cm-field"><label data-i18n="setup_namecol">Name column *</label>
+                  <select class="cm-select" id="map-name"></select></div>
+                <div class="cm-field"><label data-i18n="setup_deptcol">Department (optional)</label>
+                  <select class="cm-select" id="map-dept"><option value="">— none —</option></select></div>
+              </div>
+              <button class="btn btn-amber" style="margin-top:12px;width:100%" onclick="confirmImport()" data-i18n="setup_save">
+                ✓ Save Employees
+              </button>
+            </div>
+          </div>
+        </details>
       </div>
 
       <!-- Data management -->
@@ -711,7 +728,7 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--text)
     <div class="onboard-step" style="background:var(--lift);border-radius:8px;padding:12px;border:1px solid var(--border)">
       <h3 style="color:var(--amber);margin-bottom:6px">☁️ Want cloud backup? (optional)</h3>
       <p style="font-size:.8rem;color:var(--text2);line-height:1.5;margin-bottom:10px">Your data stays <strong>only on this device</strong> by default. Sign in with Google to back it up — so you never lose it if you clear the browser or switch phones. Free, works with any Google account.</p>
-      <button class="btn btn-amber btn-full" style="margin-bottom:6px" onclick="dismissOnboard();confirmBackupSignIn()">
+      <button class="btn btn-amber btn-full" style="margin-bottom:6px" onclick="dismissOnboard();doLogin()">
         <svg width="13" height="13" viewBox="0 0 48 48" style="vertical-align:-2px;margin-right:5px"><path fill="#EA4335" d="M24 9.5c3.4 0 6.4 1.2 8.8 3.5l6.5-6.5C35.1 2.6 29.9.5 24 .5 14.6.5 6.5 5.9 2.6 14l7.6 5.9C12.1 13.6 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.4 5.7c4.3-4 6.8-9.9 6.8-17.4z"/><path fill="#FBBC05" d="M10.2 28.1c-.5-1.5-.8-3.1-.8-4.6s.3-3.1.8-4.6l-7.6-5.9C1 16.4 0 20.1 0 24s1 7.6 2.6 10.9l7.6-5.9z"/><path fill="#34A853" d="M24 47.5c5.9 0 10.8-2 14.4-5.4l-7.4-5.7c-2 1.4-4.6 2.3-7 2.3-6.4 0-11.9-4.1-13.8-9.7l-7.6 5.9C6.5 42.1 14.6 47.5 24 47.5z"/></svg>
         Yes, sign in with Google
       </button>
@@ -754,7 +771,7 @@ function sanitizeId(id){ return String(id).replace(/[^a-zA-Z0-9_-]/g,'_') || '_'
 // I18N — translations, theme & language
 // ═══════════════════════════════════════════════════════════
 const I18N = {"nav_scan": {"en": "Scan", "id": "Pindai", "es": "Escanear", "fr": "Scanner", "pt": "Escanear", "ar": "مسح", "zh": "扫描", "hi": "स्कैन", "de": "Scannen", "ja": "スキャン"}, "nav_staff": {"en": "Staff", "id": "Staf", "es": "Personal", "fr": "Personnel", "pt": "Equipe", "ar": "الموظفون", "zh": "员工", "hi": "स्टाफ", "de": "Personal", "ja": "スタッフ"}, "nav_absent": {"en": "Absent", "id": "Absen", "es": "Ausente", "fr": "Absent", "pt": "Ausente", "ar": "غياب", "zh": "缺席", "hi": "अनुपस्थित", "de": "Abwesend", "ja": "欠席"}, "nav_recap": {"en": "Recap", "id": "Rekap", "es": "Resumen", "fr": "Récap", "pt": "Resumo", "ar": "ملخص", "zh": "汇总", "hi": "सारांश", "de": "Übersicht", "ja": "まとめ"}, "nav_badges": {"en": "Badges", "id": "Lencana", "es": "Tarjetas", "fr": "Badges", "pt": "Crachás", "ar": "البطاقات", "zh": "徽章", "hi": "बैज", "de": "Ausweise", "ja": "バッジ"}, "nav_log": {"en": "Log", "id": "Log", "es": "Registro", "fr": "Journal", "pt": "Registro", "ar": "السجل", "zh": "日志", "hi": "लॉग", "de": "Protokoll", "ja": "ログ"}, "nav_setup": {"en": "Setup", "id": "Atur", "es": "Config", "fr": "Réglages", "pt": "Config", "ar": "الإعدادات", "zh": "设置", "hi": "सेटअप", "de": "Einrichtung", "ja": "設定"}, "scan_start": {"en": "Start Camera", "id": "Mulai Kamera", "es": "Iniciar cámara", "fr": "Démarrer caméra", "pt": "Iniciar câmera", "ar": "تشغيل الكاميرا", "zh": "启动相机", "hi": "कैमरा शुरू करें", "de": "Kamera starten", "ja": "カメラを起動"}, "scan_stop": {"en": "Stop", "id": "Berhenti", "es": "Detener", "fr": "Arrêter", "pt": "Parar", "ar": "إيقاف", "zh": "停止", "hi": "बंद करें", "de": "Stopp", "ja": "停止"}, "scan_hint": {"en": "Check-in / check-out is detected automatically.", "id": "Check-in / check-out terdeteksi otomatis.", "es": "La entrada/salida se detecta automáticamente.", "fr": "L’arrivée/départ est détectée automatiquement.", "pt": "Entrada/saída detectadas automaticamente.", "ar": "يتم اكتشاف الحضور والانصراف تلقائيًا.", "zh": "签到/签退会自动检测。", "hi": "चेक-इन/चेक-आउट स्वतः पहचाना जाता है।", "de": "Ein-/Auscheckung wird automatisch erkannt.", "ja": "出勤・退勤は自動的に検出されます。"}, "scan_hint_stopped": {"en": "Camera stopped.", "id": "Kamera berhenti.", "es": "Cámara detenida.", "fr": "Caméra arrêtée.", "pt": "Câmera parada.", "ar": "تم إيقاف الكاميرا.", "zh": "相机已停止。", "hi": "कैमरा बंद हो गया।", "de": "Kamera gestoppt.", "ja": "カメラが停止しました。"}, "scan_hint_scanning": {"en": "Scanning… point at a badge QR code.", "id": "Memindai… arahkan ke kode QR.", "es": "Escaneando… apunte al código QR.", "fr": "Numérisation… visez le QR code.", "pt": "Escaneando… aponte para o QR code.", "ar": "جارٍ المسح… وجّه الكاميرا إلى رمز QR.", "zh": "扫描中…请将相机对准二维码。", "hi": "स्कैन हो रहा है… क्यूआर कोड पर इंगित करें।", "de": "Scannen… auf QR-Code richten.", "ja": "スキャン中…QRコードにカメラを向けてください。"}, "scan_lastscan": {"en": "Last scan", "id": "Pindaian terakhir", "es": "Último escaneo", "fr": "Dernier scan", "pt": "Última leitura", "ar": "آخر مسح", "zh": "最近扫描", "hi": "अंतिम स्कैन", "de": "Letzter Scan", "ja": "最後のスキャン"}, "scan_waiting": {"en": "Waiting", "id": "Menunggu", "es": "Esperando", "fr": "En attente", "pt": "Aguardando", "ar": "في الانتظار", "zh": "等待中", "hi": "प्रतीक्षा में", "de": "Wartet", "ja": "待機中"}, "scan_noscan": {"en": "No scan yet", "id": "Belum ada pindaian", "es": "Sin escaneos aún", "fr": "Aucun scan encore", "pt": "Nenhuma leitura ainda", "ar": "لا يوجد مسح بعد", "zh": "尚无扫描", "hi": "अभी कोई स्कैन नहीं", "de": "Noch kein Scan", "ja": "スキャンはまだありません"}, "scan_today": {"en": "Today", "id": "Hari ini", "es": "Hoy", "fr": "Aujourd’hui", "pt": "Hoje", "ar": "اليوم", "zh": "今天", "hi": "आज", "de": "Heute", "ja": "今日"}, "scan_noscans_today": {"en": "No scans yet", "id": "Belum ada pindaian", "es": "Sin escaneos hoy", "fr": "Pas encore de scan", "pt": "Sem leituras ainda", "ar": "لا يوجد مسح اليوم", "zh": "今天还没有扫描", "hi": "आज अभी कोई स्कैन नहीं", "de": "Heute noch kein Scan", "ja": "今日のスキャンはまだありません"}, "result_checkin": {"en": "Check In", "id": "Masuk", "es": "Entrada", "fr": "Arrivée", "pt": "Entrada", "ar": "حضور", "zh": "签到", "hi": "चेक-इन", "de": "Ankunft", "ja": "出勤"}, "result_checkout": {"en": "Check Out", "id": "Keluar", "es": "Salida", "fr": "Départ", "pt": "Saída", "ar": "انصراف", "zh": "签退", "hi": "चेक-आउट", "de": "Abreise", "ja": "退勤"}, "result_done": {"en": "Already complete", "id": "Sudah lengkap", "es": "Ya completo", "fr": "Déjà complet", "pt": "Já completo", "ar": "مكتمل مسبقًا", "zh": "已完成", "hi": "पहले से पूर्ण", "de": "Bereits vollständig", "ja": "すでに完了"}, "staff_title": {"en": "Staff", "id": "Staf", "es": "Personal", "fr": "Personnel", "pt": "Equipe", "ar": "الموظفون", "zh": "员工", "hi": "स्टाफ", "de": "Personal", "ja": "スタッフ"}, "staff_search": {"en": "Search name or ID…", "id": "Cari nama atau ID…", "es": "Buscar nombre o ID…", "fr": "Rechercher nom ou ID…", "pt": "Buscar nome ou ID…", "ar": "بحث بالاسم أو الرقم…", "zh": "搜索姓名或编号…", "hi": "नाम या आईडी खोजें…", "de": "Name oder ID suchen…", "ja": "名前またはIDを検索…"}, "staff_nomatch": {"en": "No match", "id": "Tidak ditemukan", "es": "Sin coincidencias", "fr": "Aucun résultat", "pt": "Nenhum resultado", "ar": "لا توجد نتائج", "zh": "未找到匹配", "hi": "कोई मिलान नहीं", "de": "Keine Treffer", "ja": "一致なし"}, "staff_noemp": {"en": "No employees. Import in Setup.", "id": "Belum ada pegawai. Impor di Atur.", "es": "Sin empleados. Importe en Config.", "fr": "Aucun employé. Importez dans Réglages.", "pt": "Sem funcionários. Importe em Config.", "ar": "لا يوجد موظفون. استورد من الإعدادات.", "zh": "暂无员工，请在设置中导入。", "hi": "कोई कर्मचारी नहीं। सेटअप में आयात करें।", "de": "Keine Mitarbeiter. Im Setup importieren.", "ja": "従業員がいません。設定でインポートしてください。"}, "staff_notyet": {"en": "Not yet", "id": "Belum", "es": "Aún no", "fr": "Pas encore", "pt": "Ainda não", "ar": "لم يحضر", "zh": "未到", "hi": "अभी नहीं", "de": "Noch nicht", "ja": "未到着"}, "staff_in": {"en": "In", "id": "Masuk", "es": "Entró", "fr": "Présent", "pt": "Entrou", "ar": "حاضر", "zh": "已签到", "hi": "अंदर", "de": "Da", "ja": "出勤中"}, "staff_out": {"en": "Out", "id": "Keluar", "es": "Salió", "fr": "Sorti", "pt": "Saiu", "ar": "منصرف", "zh": "已签退", "hi": "बाहर", "de": "Weg", "ja": "退勤"}, "staff_absent": {"en": "Absent", "id": "Absen", "es": "Ausente", "fr": "Absent", "pt": "Ausente", "ar": "غائب", "zh": "缺席", "hi": "अनुपस्थित", "de": "Abwesend", "ja": "欠席"}, "absent_title": {"en": "Mark Absent", "id": "Tandai Absen", "es": "Marcar ausencia", "fr": "Marquer absent", "pt": "Marcar ausência", "ar": "تسجيل غياب", "zh": "标记缺席", "hi": "अनुपस्थित चिह्नित करें", "de": "Als abwesend markieren", "ja": "欠席として記録"}, "absent_search": {"en": "Search…", "id": "Cari…", "es": "Buscar…", "fr": "Rechercher…", "pt": "Buscar…", "ar": "بحث…", "zh": "搜索…", "hi": "खोजें…", "de": "Suchen…", "ja": "検索…"}, "absent_allpresent": {"en": "Everyone has checked in today.", "id": "Semua sudah hadir hari ini.", "es": "Todos registraron entrada hoy.", "fr": "Tout le monde est arrivé aujourd’hui.", "pt": "Todos registraram entrada hoje.", "ar": "جميعهم سجلوا حضورهم اليوم.", "zh": "今天大家都已签到。", "hi": "आज सभी ने चेक-इन कर लिया है।", "de": "Alle haben sich heute eingecheckt.", "ja": "本日は全員出勤済みです。"}, "absent_noemp": {"en": "No employees loaded. Import in Setup first.", "id": "Belum ada pegawai. Impor dulu di Atur.", "es": "Sin empleados. Importe primero en Config.", "fr": "Aucun employé. Importez d’abord.", "pt": "Sem funcionários. Importe primeiro.", "ar": "لا يوجد موظفون. استورد أولاً.", "zh": "暂无员工，请先在设置中导入。", "hi": "कोई कर्मचारी नहीं। पहले आयात करें।", "de": "Keine Mitarbeiter. Erst importieren.", "ja": "従業員がいません。先にインポートしてください。"}, "absent_mark": {"en": "Mark", "id": "Tandai", "es": "Marcar", "fr": "Marquer", "pt": "Marcar", "ar": "تسجيل", "zh": "标记", "hi": "चिह्नित करें", "de": "Markieren", "ja": "記録"}, "absent_undo": {"en": "Undo", "id": "Batal", "es": "Deshacer", "fr": "Annuler", "pt": "Desfazer", "ar": "تراجع", "zh": "撤销", "hi": "पूर्ववत करें", "de": "Rückgängig", "ja": "元に戻す"}, "absent_note": {"en": "Note (optional)", "id": "Catatan (opsional)", "es": "Nota (opcional)", "fr": "Note (facultatif)", "pt": "Nota (opcional)", "ar": "ملاحظة (اختياري)", "zh": "备注（可选）", "hi": "टिप्पणी (वैकल्पिक)", "de": "Notiz (optional)", "ja": "メモ（任意）"}, "reason_sick": {"en": "Sick", "id": "Sakit", "es": "Enfermo", "fr": "Malade", "pt": "Doente", "ar": "مرض", "zh": "病假", "hi": "बीमार", "de": "Krank", "ja": "病気"}, "reason_permission": {"en": "Permission / Leave", "id": "Izin", "es": "Permiso", "fr": "Permission", "pt": "Licença", "ar": "إذن", "zh": "请假", "hi": "अनुमति/छुट्टी", "de": "Erlaubnis/Urlaub", "ja": "許可・休暇"}, "reason_family": {"en": "Family Event", "id": "Acara Keluarga", "es": "Evento familiar", "fr": "Événement familial", "pt": "Evento familiar", "ar": "مناسبة عائلية", "zh": "家庭事务", "hi": "पारिवारिक कार्यक्रम", "de": "Familienanlass", "ja": "家族の用事"}, "reason_without": {"en": "Without Notice", "id": "Tanpa Keterangan", "es": "Sin aviso", "fr": "Sans préavis", "pt": "Sem aviso", "ar": "بدون إشعار", "zh": "未请假", "hi": "सूचना के बिना", "de": "Ohne Ankündigung", "ja": "連絡なし"}, "reason_other": {"en": "Other", "id": "Lainnya", "es": "Otro", "fr": "Autre", "pt": "Outro", "ar": "أخرى", "zh": "其他", "hi": "अन्य", "de": "Sonstiges", "ja": "その他"}, "recap_title": {"en": "Monthly Recap", "id": "Rekap Bulanan", "es": "Resumen mensual", "fr": "Récapitulatif mensuel", "pt": "Resumo mensal", "ar": "ملخص شهري", "zh": "月度汇总", "hi": "मासिक सारांश", "de": "Monatsübersicht", "ja": "月間まとめ"}, "recap_legend_present": {"en": "Present", "id": "Hadir", "es": "Presente", "fr": "Présent", "pt": "Presente", "ar": "حاضر", "zh": "出席", "hi": "उपस्थित", "de": "Anwesend", "ja": "出席"}, "recap_legend_sick": {"en": "Sick", "id": "Sakit", "es": "Enfermo", "fr": "Malade", "pt": "Doente", "ar": "مرض", "zh": "病假", "hi": "बीमार", "de": "Krank", "ja": "病気"}, "recap_legend_perm": {"en": "Permission/Leave", "id": "Izin", "es": "Permiso", "fr": "Permission", "pt": "Licença", "ar": "إذن", "zh": "请假", "hi": "अनुमति/छुट्टी", "de": "Erlaubnis/Urlaub", "ja": "許可・休暇"}, "recap_legend_absent": {"en": "Absent / no info", "id": "Alpha / tanpa keterangan", "es": "Ausente / sin aviso", "fr": "Absent / sans info", "pt": "Ausente / sem aviso", "ar": "غائب / بدون إشعار", "zh": "缺席/未说明", "hi": "अनुपस्थित / सूचना नहीं", "de": "Abwesend / ohne Info", "ja": "欠席・連絡なし"}, "recap_export": {"en": "CSV", "id": "CSV", "es": "CSV", "fr": "CSV", "pt": "CSV", "ar": "CSV", "zh": "CSV", "hi": "CSV", "de": "CSV", "ja": "CSV"}, "badges_generate": {"en": "Generate Badges", "id": "Buat Lencana", "es": "Generar tarjetas", "fr": "Générer les badges", "pt": "Gerar crachás", "ar": "إنشاء البطاقات", "zh": "生成徽章", "hi": "बैज बनाएं", "de": "Ausweise erstellen", "ja": "バッジを生成"}, "badges_print": {"en": "Print All", "id": "Cetak Semua", "es": "Imprimir todo", "fr": "Tout imprimer", "pt": "Imprimir tudo", "ar": "طباعة الكل", "zh": "全部打印", "hi": "सभी प्रिंट करें", "de": "Alle drucken", "ja": "すべて印刷"}, "badges_noemp": {"en": "Click \"Generate Badges\" to make QR codes.", "id": "Klik \"Buat Lencana\" untuk membuat kode QR.", "es": "Toque \"Generar tarjetas\" para crear códigos QR.", "fr": "Cliquez sur « Générer les badges » pour créer les QR codes.", "pt": "Toque em \"Gerar crachás\" para criar os QR codes.", "ar": "اضغط على \"إنشاء البطاقات\" لإنشاء رموز QR.", "zh": "点击\"生成徽章\"以创建二维码。", "hi": "क्यूआर कोड बनाने के लिए \"बैज बनाएं\" दबाएं।", "de": "Auf \"Ausweise erstellen\" tippen, um QR-Codes zu erzeugen.", "ja": "「バッジを生成」をクリックしてQRコードを作成します。"}, "badges_noemp2": {"en": "Import employees in Setup first.", "id": "Impor pegawai dulu di Atur.", "es": "Importe empleados primero en Config.", "fr": "Importez d’abord les employés.", "pt": "Importe funcionários primeiro.", "ar": "استورد الموظفين أولاً.", "zh": "请先在设置中导入员工。", "hi": "पहले सेटअप में कर्मचारी आयात करें।", "de": "Erst Mitarbeiter im Setup importieren.", "ja": "先に設定で従業員をインポートしてください。"}, "badges_download": {"en": "Download PNG", "id": "Unduh PNG", "es": "Descargar PNG", "fr": "Télécharger PNG", "pt": "Baixar PNG", "ar": "تنزيل PNG", "zh": "下载PNG", "hi": "PNG डाउनलोड करें", "de": "PNG herunterladen", "ja": "PNGをダウンロード"}, "log_title": {"en": "Attendance Log", "id": "Log Kehadiran", "es": "Registro de asistencia", "fr": "Journal de présence", "pt": "Registro de presença", "ar": "سجل الحضور", "zh": "出勤记录", "hi": "उपस्थिति लॉग", "de": "Anwesenheitsprotokoll", "ja": "出勤記録"}, "log_search": {"en": "Search…", "id": "Cari…", "es": "Buscar…", "fr": "Rechercher…", "pt": "Buscar…", "ar": "بحث…", "zh": "搜索…", "hi": "खोजें…", "de": "Suchen…", "ja": "検索…"}, "log_empty": {"en": "No records yet", "id": "Belum ada catatan", "es": "Sin registros aún", "fr": "Aucun enregistrement", "pt": "Sem registros ainda", "ar": "لا توجد سجلات بعد", "zh": "暂无记录", "hi": "अभी कोई रिकॉर्ड नहीं", "de": "Noch keine Einträge", "ja": "まだ記録がありません"}, "setup_title": {"en": "Setup", "id": "Atur", "es": "Configuración", "fr": "Réglages", "pt": "Configurações", "ar": "الإعدادات", "zh": "设置", "hi": "सेटअप", "de": "Einrichtung", "ja": "設定"}, "setup_import_title": {"en": "📂 Import Employees", "id": "📂 Impor Pegawai", "es": "📂 Importar empleados", "fr": "📂 Importer les employés", "pt": "📂 Importar funcionários", "ar": "📂 استيراد الموظفين", "zh": "📂 导入员工", "hi": "📂 कर्मचारी आयात करें", "de": "📂 Mitarbeiter importieren", "ja": "📂 従業員をインポート"}, "setup_import_desc": {"en": "Upload an Excel (.xlsx) or CSV file. Data saves to the cloud — you only need to do this once. Only the Name column is required; ID and Department are optional.", "id": "Unggah file Excel (.xlsx) atau CSV. Data tersimpan di cloud — cukup sekali saja. Hanya kolom Nama yang wajib; ID dan Departemen opsional.", "es": "Suba un archivo Excel (.xlsx) o CSV. Los datos se guardan en la nube; solo necesita hacerlo una vez. Solo la columna Nombre es obligatoria; ID y Departamento son opcionales.", "fr": "Importez un fichier Excel (.xlsx) ou CSV. Les données sont sauvegardées dans le cloud — une seule fois suffit. Seule la colonne Nom est requise ; ID et Service sont facultatifs.", "pt": "Envie um arquivo Excel (.xlsx) ou CSV. Os dados são salvos na nuvem — basta fazer isso uma vez. Apenas a coluna Nome é obrigatória; ID e Departamento são opcionais.", "ar": "قم بتحميل ملف Excel (.xlsx) أو CSV. تُحفظ البيانات في السحابة، وتحتاج لفعل ذلك مرة واحدة فقط. عمود الاسم مطلوب فقط؛ الرقم والقسم اختياريان.", "zh": "上传 Excel（.xlsx）或 CSV 文件。数据将保存到云端，只需上传一次。仅\"姓名\"列为必填，编号和部门为可选。", "hi": "Excel (.xlsx) या CSV फ़ाइल अपलोड करें। डेटा क्लाउड में सहेजा जाता है — केवल एक बार करना होगा। केवल नाम कॉलम आवश्यक है; आईडी और विभाग वैकल्पिक हैं।", "de": "Excel- (.xlsx) oder CSV-Datei hochladen. Daten werden in der Cloud gespeichert — nur einmal nötig. Nur die Spalte \"Name\" ist erforderlich; ID und Abteilung sind optional.", "ja": "Excel（.xlsx）またはCSVファイルをアップロードしてください。データはクラウドに保存され、一度だけで済みます。「名前」列のみ必須で、IDと部署は任意です。"}, "setup_drop": {"en": "Drop file here or <strong>click to browse</strong>", "id": "Letakkan file di sini atau <strong>klik untuk memilih</strong>", "es": "Suelte el archivo aquí o <strong>haga clic para elegir</strong>", "fr": "Déposez le fichier ici ou <strong>cliquez pour parcourir</strong>", "pt": "Solte o arquivo aqui ou <strong>clique para escolher</strong>", "ar": "أسقط الملف هنا أو <strong>اضغط للاختيار</strong>", "zh": "将文件拖到此处，或<strong>点击选择</strong>", "hi": "फ़ाइल यहाँ छोड़ें या <strong>चुनने के लिए क्लिक करें</strong>", "de": "Datei hier ablegen oder <strong>zum Auswählen klicken</strong>", "ja": "ここにファイルをドロップ、または<strong>クリックして選択</strong>"}, "setup_filetypes": {"en": ".xlsx, .xls, .csv supported", "id": ".xlsx, .xls, .csv didukung", "es": ".xlsx, .xls, .csv compatibles", "fr": ".xlsx, .xls, .csv pris en charge", "pt": ".xlsx, .xls, .csv suportados", "ar": "يدعم .xlsx, .xls, .csv", "zh": "支持 .xlsx、.xls、.csv", "hi": ".xlsx, .xls, .csv समर्थित", "de": ".xlsx, .xls, .csv unterstützt", "ja": ".xlsx、.xls、.csv に対応"}, "setup_idcol": {"en": "ID column (optional)", "id": "Kolom ID (opsional)", "es": "Columna ID (opcional)", "fr": "Colonne ID (facultatif)", "pt": "Coluna ID (opcional)", "ar": "عمود الرقم (اختياري)", "zh": "编号列（可选）", "hi": "आईडी कॉलम (वैकल्पिक)", "de": "ID-Spalte (optional)", "ja": "ID列（任意）"}, "setup_namecol": {"en": "Name column *", "id": "Kolom Nama *", "es": "Columna Nombre *", "fr": "Colonne Nom *", "pt": "Coluna Nome *", "ar": "عمود الاسم *", "zh": "姓名列 *", "hi": "नाम कॉलम *", "de": "Namensspalte *", "ja": "名前列 *"}, "setup_deptcol": {"en": "Department (optional)", "id": "Departemen (opsional)", "es": "Departamento (opcional)", "fr": "Service (facultatif)", "pt": "Departamento (opcional)", "ar": "القسم (اختياري)", "zh": "部门（可选）", "hi": "विभाग (वैकल्पिक)", "de": "Abteilung (optional)", "ja": "部署（任意）"}, "setup_auto": {"en": "— auto-number —", "id": "— nomor otomatis —", "es": "— numeración automática —", "fr": "— numérotation auto —", "pt": "— numeração automática —", "ar": "— ترقيم تلقائي —", "zh": "— 自动编号 —", "hi": "— स्वतः क्रमांक —", "de": "— automatische Nummer —", "ja": "— 自動採番 —"}, "setup_none": {"en": "— none —", "id": "— tidak ada —", "es": "— ninguno —", "fr": "— aucun —", "pt": "— nenhum —", "ar": "— لا يوجد —", "zh": "— 无 —", "hi": "— कोई नहीं —", "de": "— keine —", "ja": "— なし —"}, "setup_save": {"en": "✓ Save Employees", "id": "✓ Simpan Pegawai", "es": "✓ Guardar empleados", "fr": "✓ Enregistrer les employés", "pt": "✓ Salvar funcionários", "ar": "✓ حفظ الموظفين", "zh": "✓ 保存员工", "hi": "✓ कर्मचारी सहेजें", "de": "✓ Mitarbeiter speichern", "ja": "✓ 従業員を保存"}, "setup_data_title": {"en": "🗃 Data & Export", "id": "🗃 Data & Ekspor", "es": "🗃 Datos y exportación", "fr": "🗃 Données et export", "pt": "🗃 Dados e exportação", "ar": "🗃 البيانات والتصدير", "zh": "🗃 数据与导出", "hi": "🗃 डेटा और निर्यात", "de": "🗃 Daten & Export", "ja": "🗃 データと書き出し"}, "setup_data_desc": {"en": "Export logs or clear data when starting a new period. Employee list is separate from the attendance log.", "id": "Ekspor log atau hapus data saat memulai periode baru. Daftar pegawai terpisah dari log kehadiran.", "es": "Exporte registros o borre datos al iniciar un nuevo período. La lista de empleados es independiente del registro de asistencia.", "fr": "Exportez les journaux ou effacez les données pour une nouvelle période. La liste des employés est séparée du journal de présence.", "pt": "Exporte registros ou limpe dados ao iniciar um novo período. A lista de funcionários é separada do registro de presença.", "ar": "قم بتصدير السجلات أو مسح البيانات عند بدء فترة جديدة. قائمة الموظفين منفصلة عن سجل الحضور.", "zh": "开始新周期时可导出日志或清除数据。员工名单与出勤记录是分开的。", "hi": "नई अवधि शुरू करते समय लॉग निर्यात करें या डेटा साफ़ करें। कर्मचारी सूची उपस्थिति लॉग से अलग है।", "de": "Protokolle exportieren oder Daten löschen, wenn ein neuer Zeitraum beginnt. Die Mitarbeiterliste ist vom Anwesenheitsprotokoll getrennt.", "ja": "新しい期間を始める際は、ログを書き出すかデータを消去できます。従業員リストは出勤記録とは別に管理されます。"}, "setup_exportlog": {"en": "⬇ Export Full Log (CSV)", "id": "⬇ Ekspor Semua Log (CSV)", "es": "⬇ Exportar registro completo (CSV)", "fr": "⬇ Exporter le journal complet (CSV)", "pt": "⬇ Exportar registro completo (CSV)", "ar": "⬇ تصدير السجل الكامل (CSV)", "zh": "⬇ 导出完整日志（CSV）", "hi": "⬇ पूरा लॉग निर्यात करें (CSV)", "de": "⬇ Vollständiges Protokoll exportieren (CSV)", "ja": "⬇ すべてのログを書き出す（CSV）"}, "setup_exportsummary": {"en": "⬇ Export Today’s Summary (CSV)", "id": "⬇ Ekspor Ringkasan Hari Ini (CSV)", "es": "⬇ Exportar resumen de hoy (CSV)", "fr": "⬇ Exporter le résumé du jour (CSV)", "pt": "⬇ Exportar resumo de hoje (CSV)", "ar": "⬇ تصدير ملخص اليوم (CSV)", "zh": "⬇ 导出今日汇总（CSV）", "hi": "⬇ आज का सारांश निर्यात करें (CSV)", "de": "⬇ Heutige Zusammenfassung exportieren (CSV)", "ja": "⬇ 本日のまとめを書き出す（CSV）"}, "setup_clearlog": {"en": "🗑 Clear Attendance Log", "id": "🗑 Hapus Log Kehadiran", "es": "🗑 Borrar registro de asistencia", "fr": "🗑 Effacer le journal de présence", "pt": "🗑 Limpar registro de presença", "ar": "🗑 مسح سجل الحضور", "zh": "🗑 清除出勤记录", "hi": "🗑 उपस्थिति लॉग साफ़ करें", "de": "🗑 Anwesenheitsprotokoll löschen", "ja": "🗑 出勤記録を消去"}, "setup_clearall": {"en": "🗑 Clear Everything", "id": "🗑 Hapus Semua", "es": "🗑 Borrar todo", "fr": "🗑 Tout effacer", "pt": "🗑 Limpar tudo", "ar": "🗑 مسح الكل", "zh": "🗑 清除全部", "hi": "🗑 सब कुछ साफ़ करें", "de": "🗑 Alles löschen", "ja": "🗑 すべて消去"}, "setup_qr_title": {"en": "📋 QR Code Format", "id": "📋 Format Kode QR", "es": "📋 Formato del código QR", "fr": "📋 Format du QR code", "pt": "📋 Formato do QR code", "ar": "📋 تنسيق رمز QR", "zh": "📋 二维码格式", "hi": "📋 क्यूआर कोड प्रारूप", "de": "📋 QR-Code-Format", "ja": "📋 QRコード形式"}, "setup_qr_desc": {"en": "Each QR code encodes a JSON string. Badges tab generates these automatically from your employee list.", "id": "Setiap kode QR berisi string JSON. Tab Lencana membuatnya otomatis dari daftar pegawai Anda.", "es": "Cada código QR codifica una cadena JSON. La pestaña Tarjetas las genera automáticamente desde su lista de empleados.", "fr": "Chaque QR code encode une chaîne JSON. L’onglet Badges les génère automatiquement à partir de votre liste d’employés.", "pt": "Cada QR code codifica uma string JSON. A aba Crachás gera isso automaticamente a partir da sua lista de funcionários.", "ar": "يحتوي كل رمز QR على نص JSON. يقوم تبويب البطاقات بإنشائها تلقائيًا من قائمة الموظفين.", "zh": "每个二维码都编码一个 JSON 字符串。\"徽章\"标签会根据您的员工列表自动生成。", "hi": "हर क्यूआर कोड में एक JSON स्ट्रिंग होती है। बैज टैब आपकी कर्मचारी सूची से इन्हें स्वतः बनाता है।", "de": "Jeder QR-Code enthält einen JSON-String. Der Ausweise-Tab erstellt diese automatisch aus Ihrer Mitarbeiterliste.", "ja": "各QRコードはJSON文字列を含みます。バッジタブが従業員リストから自動生成します。"}, "setup_pref_title": {"en": "🌐 Preferences", "id": "🌐 Preferensi", "es": "🌐 Preferencias", "fr": "🌐 Préférences", "pt": "🌐 Preferências", "ar": "🌐 التفضيلات", "zh": "🌐 偏好设置", "hi": "🌐 प्राथमिकताएं", "de": "🌐 Einstellungen", "ja": "🌐 環境設定"}, "setup_pref_desc": {"en": "Theme and language are saved to your account and sync across devices.", "id": "Tema dan bahasa disimpan ke akun Anda dan tersinkron di semua perangkat.", "es": "El tema y el idioma se guardan en su cuenta y se sincronizan entre dispositivos.", "fr": "Le thème et la langue sont enregistrés sur votre compte et synchronisés entre appareils.", "pt": "O tema e o idioma são salvos na sua conta e sincronizados entre dispositivos.", "ar": "يتم حفظ المظهر واللغة في حسابك وتتم مزامنتهما بين الأجهزة.", "zh": "主题和语言会保存到您的账户，并在各设备间同步。", "hi": "थीम और भाषा आपके खाते में सहेजी जाती हैं और सभी डिवाइस पर समन्वयित होती हैं।", "de": "Design und Sprache werden in Ihrem Konto gespeichert und geräteübergreifend synchronisiert.", "ja": "テーマと言語はアカウントに保存され、デバイス間で同期されます。"}, "setup_theme": {"en": "Theme", "id": "Tema", "es": "Tema", "fr": "Thème", "pt": "Tema", "ar": "المظهر", "zh": "主题", "hi": "थीम", "de": "Design", "ja": "テーマ"}, "setup_theme_dark": {"en": "🌙 Dark", "id": "🌙 Gelap", "es": "🌙 Oscuro", "fr": "🌙 Sombre", "pt": "🌙 Escuro", "ar": "🌙 داكن", "zh": "🌙 深色", "hi": "🌙 डार्क", "de": "🌙 Dunkel", "ja": "🌙 ダーク"}, "setup_theme_light": {"en": "☀️ Light", "id": "☀️ Terang", "es": "☀️ Claro", "fr": "☀️ Clair", "pt": "☀️ Claro", "ar": "☀️ فاتح", "zh": "☀️ 浅色", "hi": "☀️ लाइट", "de": "☀️ Hell", "ja": "☀️ ライト"}, "setup_lang": {"en": "Language", "id": "Bahasa", "es": "Idioma", "fr": "Langue", "pt": "Idioma", "ar": "اللغة", "zh": "语言", "hi": "भाषा", "de": "Sprache", "ja": "言語"}, "setup_signout": {"en": "Sign out", "id": "Keluar", "es": "Cerrar sesión", "fr": "Se déconnecter", "pt": "Sair", "ar": "تسجيل الخروج", "zh": "退出登录", "hi": "साइन आउट", "de": "Abmelden", "ja": "サインアウト"}, "toast_checkedin": {"en": "checked in", "id": "check-in", "es": "registró entrada", "fr": "est arrivé", "pt": "check-in", "ar": "سجّل حضوره", "zh": "已签到", "hi": "चेक-इन किया", "de": "hat sich eingecheckt", "ja": "が出勤しました"}, "toast_checkedout": {"en": "checked out", "id": "check-out", "es": "registró salida", "fr": "est parti", "pt": "check-out", "ar": "سجّل انصرافه", "zh": "已签退", "hi": "चेक-आउट किया", "de": "hat sich ausgecheckt", "ja": "が退勤しました"}, "toast_alreadydone": {"en": "already complete today", "id": "sudah lengkap hari ini", "es": "ya completo hoy", "fr": "déjà complet aujourd’hui", "pt": "já completo hoje", "ar": "مكتمل بالفعل اليوم", "zh": "今天已完成", "hi": "आज पहले से पूर्ण", "de": "heute bereits vollständig", "ja": "本日はすでに完了しています"}, "toast_invalidqr": {"en": "⚠ Not a valid employee badge", "id": "⚠ Bukan lencana pegawai yang valid", "es": "⚠ Tarjeta de empleado no válida", "fr": "⚠ Badge employé invalide", "pt": "⚠ Crachá de funcionário inválido", "ar": "⚠ بطاقة موظف غير صالحة", "zh": "⚠ 无效的员工徽章", "hi": "⚠ अमान्य कर्मचारी बैज", "de": "⚠ Ungültiger Mitarbeiterausweis", "ja": "⚠ 無効な従業員バッジです"}, "toast_camera_error": {"en": "Camera error: ", "id": "Kesalahan kamera: ", "es": "Error de cámara: ", "fr": "Erreur caméra : ", "pt": "Erro de câmera: ", "ar": "خطأ في الكاميرا: ", "zh": "相机错误：", "hi": "कैमरा त्रुटि: ", "de": "Kamerafehler: ", "ja": "カメラエラー："}, "toast_absentmarked": {"en": "marked absent", "id": "ditandai absen", "es": "marcado como ausente", "fr": "marqué absent", "pt": "marcado como ausente", "ar": "تم تسجيله غائبًا", "zh": "已标记缺席", "hi": "अनुपस्थित चिह्नित", "de": "als abwesend markiert", "ja": "を欠席として記録しました"}, "toast_absentcleared": {"en": "Absence cleared", "id": "Absen dibatalkan", "es": "Ausencia eliminada", "fr": "Absence annulée", "pt": "Ausência removida", "ar": "تم إلغاء الغياب", "zh": "缺席记录已清除", "hi": "अनुपस्थिति हटाई गई", "de": "Abwesenheit entfernt", "ja": "欠席記録を削除しました"}, "toast_noexport": {"en": "Nothing to export", "id": "Tidak ada yang diekspor", "es": "Nada para exportar", "fr": "Rien à exporter", "pt": "Nada para exportar", "ar": "لا يوجد شيء للتصدير", "zh": "没有可导出的内容", "hi": "निर्यात करने के लिए कुछ नहीं", "de": "Nichts zu exportieren", "ja": "書き出す内容がありません"}, "toast_exported": {"en": "Exported", "id": "Berhasil diekspor", "es": "Exportado", "fr": "Exporté", "pt": "Exportado", "ar": "تم التصدير", "zh": "已导出", "hi": "निर्यात हुआ", "de": "Exportiert", "ja": "書き出しました"}, "toast_logcleared": {"en": "Attendance log cleared", "id": "Log kehadiran dihapus", "es": "Registro de asistencia borrado", "fr": "Journal de présence effacé", "pt": "Registro de presença limpo", "ar": "تم مسح سجل الحضور", "zh": "出勤记录已清除", "hi": "उपस्थिति लॉग साफ़ हुआ", "de": "Anwesenheitsprotokoll gelöscht", "ja": "出勤記録を消去しました"}, "toast_allcleared": {"en": "All data cleared", "id": "Semua data dihapus", "es": "Todos los datos borrados", "fr": "Toutes les données effacées", "pt": "Todos os dados limpos", "ar": "تم مسح جميع البيانات", "zh": "所有数据已清除", "hi": "सभी डेटा साफ़ हुआ", "de": "Alle Daten gelöscht", "ja": "すべてのデータを消去しました"}, "toast_clearfail": {"en": "⚠ Failed to clear data", "id": "⚠ Gagal menghapus data", "es": "⚠ Error al borrar datos", "fr": "⚠ Échec de l’effacement", "pt": "⚠ Falha ao limpar dados", "ar": "⚠ فشل مسح البيانات", "zh": "⚠ 清除数据失败", "hi": "⚠ डेटा साफ़ करने में विफल", "de": "⚠ Löschen fehlgeschlagen", "ja": "⚠ データの消去に失敗しました"}, "toast_loaded": {"en": "employees loaded", "id": "pegawai dimuat", "es": "empleados cargados", "fr": "employés chargés", "pt": "funcionários carregados", "ar": "تم تحميل الموظفين", "zh": "名员工已加载", "hi": "कर्मचारी लोड हुए", "de": "Mitarbeiter geladen", "ja": "名の従業員を読み込みました"}, "toast_uploadfail": {"en": "⚠ Upload failed — check your connection / Firestore rules", "id": "⚠ Unggah gagal — periksa koneksi / aturan Firestore", "es": "⚠ Error al subir — revise su conexión / reglas de Firestore", "fr": "⚠ Échec de l’envoi — vérifiez la connexion / règles Firestore", "pt": "⚠ Falha no envio — verifique a conexão / regras do Firestore", "ar": "⚠ فشل الرفع — تحقق من الاتصال / قواعد Firestore", "zh": "⚠ 上传失败——请检查网络连接/Firestore规则", "hi": "⚠ अपलोड विफल — कनेक्शन/Firestore नियम जांचें", "de": "⚠ Upload fehlgeschlagen — Verbindung/Firestore-Regeln prüfen", "ja": "⚠ アップロード失敗 — 接続またはFirestoreルールを確認してください"}, "toast_uploading": {"en": "Uploading to cloud…", "id": "Mengunggah ke cloud…", "es": "Subiendo a la nube…", "fr": "Envoi vers le cloud…", "pt": "Enviando para a nuvem…", "ar": "جارٍ الرفع إلى السحابة…", "zh": "正在上传到云端…", "hi": "क्लाउड पर अपलोड हो रहा है…", "de": "Wird in die Cloud hochgeladen…", "ja": "クラウドにアップロード中…"}, "toast_savedcloud": {"en": "employees saved to the cloud.", "id": "pegawai disimpan ke cloud.", "es": "empleados guardados en la nube.", "fr": "employés enregistrés dans le cloud.", "pt": "funcionários salvos na nuvem.", "ar": "تم حفظ الموظفين في السحابة.", "zh": "名员工已保存到云端。", "hi": "कर्मचारी क्लाउड में सहेजे गए।", "de": "Mitarbeiter in der Cloud gespeichert.", "ja": "名の従業員をクラウドに保存しました。"}, "toast_norows": {"en": "No valid rows found", "id": "Tidak ada baris valid", "es": "No se encontraron filas válidas", "fr": "Aucune ligne valide trouvée", "pt": "Nenhuma linha válida encontrada", "ar": "لم يتم العثور على صفوف صالحة", "zh": "未找到有效行", "de": "Keine gültigen Zeilen gefunden", "ja": "有効な行が見つかりません", "hi": "कोई वैध पंक्ति नहीं मिली"}, "toast_namerequired": {"en": "Name column is required", "id": "Kolom Nama wajib diisi", "es": "La columna Nombre es obligatoria", "fr": "La colonne Nom est requise", "pt": "A coluna Nome é obrigatória", "ar": "عمود الاسم مطلوب", "zh": "姓名列为必填项", "hi": "नाम कॉलम आवश्यक है", "de": "Namensspalte ist erforderlich", "ja": "名前列は必須です"}, "toast_foundrows": {"en": "Found {n} rows. Map your columns below.", "id": "Ditemukan {n} baris. Petakan kolom di bawah.", "es": "Se encontraron {n} filas. Asigne sus columnas abajo.", "fr": "{n} lignes trouvées. Associez vos colonnes ci-dessous.", "pt": "Encontradas {n} linhas. Mapeie suas colunas abaixo.", "ar": "تم العثور على {n} صفًا. حدد الأعمدة أدناه.", "zh": "找到 {n} 行。请在下方映射列。", "hi": "{n} पंक्तियाँ मिलीं। नीचे कॉलम मैप करें।", "de": "{n} Zeilen gefunden. Spalten unten zuordnen.", "ja": "{n} 行見つかりました。下で列を対応付けてください。"}, "toast_emptyfile": {"en": "File is empty or unreadable", "id": "File kosong atau tidak terbaca", "es": "El archivo está vacío o no se puede leer", "fr": "Fichier vide ou illisible", "pt": "Arquivo vazio ou ilegível", "ar": "الملف فارغ أو غير قابل للقراءة", "zh": "文件为空或无法读取", "hi": "फ़ाइल खाली या अपठनीय है", "de": "Datei ist leer oder nicht lesbar", "ja": "ファイルが空か読み取れません"}, "toast_signinfail": {"en": "Sign-in failed. Please try again.", "id": "Gagal masuk. Coba lagi.", "es": "Error al iniciar sesión. Intente de nuevo.", "fr": "Échec de la connexion. Réessayez.", "pt": "Falha no login. Tente novamente.", "ar": "فشل تسجيل الدخول. حاول مرة أخرى.", "zh": "登录失败，请重试。", "hi": "साइन-इन विफल। फिर से प्रयास करें।", "de": "Anmeldung fehlgeschlagen. Bitte erneut versuchen.", "ja": "サインインに失敗しました。再度お試しください。"}, "toast_popupblocked": {"en": "Popup blocked — allow popups and retry.", "id": "Popup diblokir — izinkan popup dan coba lagi.", "es": "Ventana bloqueada — permita ventanas y reintente.", "fr": "Fenêtre bloquée — autorisez les popups et réessayez.", "pt": "Popup bloqueado — permita popups e tente de novo.", "ar": "تم حظر النافذة المنبثقة — اسمح بها وأعد المحاولة.", "zh": "弹出窗口被阻止——请允许弹出窗口后重试。", "hi": "पॉपअप अवरुद्ध — पॉपअप अनुमति दें और पुनः प्रयास करें।", "de": "Popup blockiert — Popups zulassen und erneut versuchen.", "ja": "ポップアップがブロックされました。許可して再試行してください。"}, "toast_baddomain": {"en": "This domain is not authorized in Firebase.", "id": "Domain ini belum diizinkan di Firebase.", "es": "Este dominio no está autorizado en Firebase.", "fr": "Ce domaine n’est pas autorisé dans Firebase.", "pt": "Este domínio não está autorizado no Firebase.", "ar": "هذا النطاق غير مصرح به في Firebase.", "zh": "此域名未在 Firebase 中授权。", "hi": "यह डोमेन Firebase में अधिकृत नहीं है।", "de": "Diese Domain ist in Firebase nicht autorisiert.", "ja": "このドメインはFirebaseで承認されていません。"}, "toast_synced": {"en": "Synced", "id": "Tersinkron", "es": "Sincronizado", "fr": "Synchronisé", "pt": "Sincronizado", "ar": "تمت المزامنة", "zh": "已同步", "hi": "सिंक हो गया", "de": "Synchronisiert", "ja": "同期しました"}, "status_present": {"en": "Present", "id": "Hadir", "es": "Presente", "fr": "Présent", "pt": "Presente", "ar": "حاضر", "zh": "出席", "hi": "उपस्थित", "de": "Anwesend", "ja": "出席"}, "status_norecord": {"en": "No record", "id": "Tidak ada data", "es": "Sin registro", "fr": "Aucune donnée", "pt": "Sem registro", "ar": "لا توجد بيانات", "zh": "无记录", "hi": "कोई रिकॉर्ड नहीं", "de": "Kein Eintrag", "ja": "記録なし"}, "onboard_title": {"en": "Welcome to Hadir 👋", "id": "Selamat Datang di Hadir 👋", "es": "Bienvenido a Hadir 👋", "fr": "Bienvenue sur Hadir 👋", "pt": "Bem-vindo ao Hadir 👋", "ar": "مرحبًا بك في Hadir 👋", "zh": "欢迎使用 Hadir 👋", "hi": "Hadir में आपका स्वागत है 👋", "de": "Willkommen bei Hadir 👋", "ja": "Hadirへようこそ 👋"}, "onboard_step1_title": {"en": "1. Import your list", "id": "1. Impor daftar Anda", "es": "1. Importe su lista", "fr": "1. Importez votre liste", "pt": "1. Importe sua lista", "ar": "١. استورد قائمتك", "zh": "1. 导入名单", "hi": "1. अपनी सूची आयात करें", "de": "1. Liste importieren", "ja": "1. リストをインポート"}, "onboard_step1_desc": {"en": "Go to Setup → upload an Excel (.xlsx) or CSV file. The first row must be column headers. Only a Name column is required — ID and Department/Class are optional (ID auto-numbers if left out).", "id": "Buka Atur → unggah file Excel (.xlsx) atau CSV. Baris pertama harus berisi nama kolom. Hanya kolom Nama yang wajib — ID dan Departemen/Kelas opsional (ID otomatis bernomor jika kosong).", "es": "Vaya a Config → suba un archivo Excel (.xlsx) o CSV. La primera fila debe contener los encabezados. Solo la columna Nombre es obligatoria; ID y Departamento/Clase son opcionales (el ID se numera automáticamente si se omite).", "fr": "Allez dans Réglages → importez un fichier Excel (.xlsx) ou CSV. La première ligne doit contenir les en-têtes. Seule la colonne Nom est requise ; ID et Service/Classe sont facultatifs (l’ID est numéroté automatiquement si absent).", "pt": "Vá em Config → envie um arquivo Excel (.xlsx) ou CSV. A primeira linha deve conter os cabeçalhos. Apenas a coluna Nome é obrigatória; ID e Departamento/Turma são opcionais (o ID é numerado automaticamente se ausente).", "ar": "اذهب إلى الإعدادات ← قم بتحميل ملف Excel (.xlsx) أو CSV. يجب أن يحتوي الصف الأول على عناوين الأعمدة. عمود الاسم مطلوب فقط؛ الرقم والقسم/الصف اختياريان (يتم ترقيم الرقم تلقائيًا إذا تُرك فارغًا).", "zh": "进入设置 → 上传 Excel（.xlsx）或 CSV 文件。第一行必须是列标题。仅\"姓名\"列为必填；编号和部门/班级为可选（若留空编号会自动生成）。", "hi": "सेटअप पर जाएं → Excel (.xlsx) या CSV फ़ाइल अपलोड करें। पहली पंक्ति में कॉलम शीर्षक होने चाहिए। केवल नाम कॉलम आवश्यक है — आईडी और विभाग/कक्षा वैकल्पिक हैं (छोड़ने पर आईडी स्वतः क्रमांकित होती है)।", "de": "Gehe zu Setup → Excel- (.xlsx) oder CSV-Datei hochladen. Die erste Zeile muss die Spaltentitel enthalten. Nur die Spalte \"Name\" ist erforderlich; ID und Abteilung/Klasse sind optional (ID wird automatisch nummeriert, falls weggelassen).", "ja": "設定タブを開き、Excel（.xlsx）またはCSVファイルをアップロードしてください。1行目には列見出しが必要です。「名前」列のみ必須で、IDと部署・クラスは任意です（省略時はIDが自動採番されます）。"}, "onboard_step2_title": {"en": "2. Print QR badges", "id": "2. Cetak lencana QR", "es": "2. Imprima las tarjetas QR", "fr": "2. Imprimez les badges QR", "pt": "2. Imprima os crachás QR", "ar": "٢. اطبع بطاقات QR", "zh": "2. 打印二维码徽章", "hi": "2. क्यूआर बैज प्रिंट करें", "de": "2. QR-Ausweise drucken", "ja": "2. QRバッジを印刷"}, "onboard_step2_desc": {"en": "Go to Badges → Generate Badges → Print All (or download each one individually). Hand a printed QR badge to each person.", "id": "Buka Lencana → Buat Lencana → Cetak Semua (atau unduh satu per satu). Berikan lencana QR yang sudah dicetak kepada setiap orang.", "es": "Vaya a Tarjetas → Generar tarjetas → Imprimir todo (o descargue cada una individualmente). Entregue una tarjeta QR impresa a cada persona.", "fr": "Allez dans Badges → Générer les badges → Tout imprimer (ou téléchargez-les individuellement). Remettez un badge QR imprimé à chaque personne.", "pt": "Vá em Crachás → Gerar crachás → Imprimir tudo (ou baixe cada um individualmente). Entregue um crachá QR impresso para cada pessoa.", "ar": "اذهب إلى البطاقات ← إنشاء البطاقات ← طباعة الكل (أو نزّل كل واحدة على حدة). أعط كل شخص بطاقة QR مطبوعة.", "zh": "进入徽章 → 生成徽章 → 全部打印（或单独下载每一张）。将打印好的二维码徽章发给每个人。", "hi": "बैज पर जाएं → बैज बनाएं → सभी प्रिंट करें (या हर एक को अलग से डाउनलोड करें)। हर व्यक्ति को प्रिंटेड क्यूआर बैज दें।", "de": "Gehe zu Ausweise → Ausweise erstellen → Alle drucken (oder jeden einzeln herunterladen). Gib jeder Person einen gedruckten QR-Ausweis.", "ja": "バッジタブを開き、バッジを生成→すべて印刷（または個別にダウンロード）。印刷したQRバッジを各person に配布してください。"}, "onboard_step3_title": {"en": "3. Scan daily", "id": "3. Pindai setiap hari", "es": "3. Escanee diariamente", "fr": "3. Scannez chaque jour", "pt": "3. Escaneie diariamente", "ar": "٣. مسح يومي", "zh": "3. 每日扫描", "hi": "3. रोज़ाना स्कैन करें", "de": "3. Täglich scannen", "ja": "3. 毎日スキャン"}, "onboard_step3_desc": {"en": "Leave this device on the Scan tab. The first scan of the day checks someone in; scanning again checks them out — fully automatic, no buttons to press. Use the Absent tab to record who didn’t come and why.", "id": "Biarkan perangkat ini di tab Pindai. Pindaian pertama hari itu adalah check-in; pindai lagi untuk check-out — otomatis, tanpa tombol. Gunakan tab Absen untuk mencatat siapa yang tidak hadir dan alasannya.", "es": "Deje este dispositivo en la pestaña Escanear. El primer escaneo del día registra la entrada; escanear de nuevo registra la salida, todo automático. Use la pestaña Ausente para registrar quién no vino y por qué.", "fr": "Laissez cet appareil sur l’onglet Scanner. Le premier scan de la journée enregistre l’arrivée ; un second scan enregistre le départ — entièrement automatique. Utilisez l’onglet Absent pour noter qui n’est pas venu et pourquoi.", "pt": "Deixe este dispositivo na aba Escanear. A primeira leitura do dia registra a entrada; ler novamente registra a saída — totalmente automático. Use a aba Ausente para registrar quem não veio e por quê.", "ar": "اترك هذا الجهاز على تبويب المسح. أول مسح في اليوم يسجل الحضور؛ والمسح مرة أخرى يسجل الانصراف — تلقائيًا بالكامل. استخدم تبويب الغياب لتسجيل من لم يأت وسبب ذلك.", "zh": "将此设备保持在\"扫描\"标签页。当天第一次扫描记为签到；再次扫描记为签退——完全自动，无需按任何按钮。使用\"缺席\"标签页记录未到人员及原因。", "hi": "इस डिवाइस को स्कैन टैब पर छोड़ दें। दिन का पहला स्कैन चेक-इन है; फिर से स्कैन करने पर चेक-आउट होता है — पूरी तरह स्वचालित। किसने नहीं आया और क्यों, यह दर्ज करने के लिए अनुपस्थित टैब का उपयोग करें।", "de": "Lasse dieses Gerät im Scan-Tab. Der erste Scan des Tages checkt jemanden ein; erneutes Scannen checkt aus — vollautomatisch. Nutze den Abwesend-Tab, um zu erfassen, wer nicht kam und warum.", "ja": "このデバイスをスキャンタブのままにしておいてください。その日最初のスキャンが出勤、再度のスキャンが退勤として自動的に記録されます。欠席タブで、来なかった人とその理由を記録できます。"}, "onboard_dismiss": {"en": "Got it, let’s go", "id": "Mengerti, lanjutkan", "es": "Entendido, continuar", "fr": "Compris, c’est parti", "pt": "Entendi, vamos lá", "ar": "حسنًا، لنبدأ", "zh": "知道了，开始使用", "hi": "ठीक है, शुरू करें", "de": "Verstanden, los geht’s", "ja": "了解、始めましょう"}, "help_button": {"en": "Help", "id": "Bantuan", "es": "Ayuda", "fr": "Aide", "pt": "Ajuda", "ar": "مساعدة", "zh": "帮助", "hi": "मदद", "de": "Hilfe", "ja": "ヘルプ"}};
-const I18N_STUDENT = {"nav_staff": {"en": "Students", "id": "Siswa", "es": "Estudiantes", "fr": "Élèves", "pt": "Alunos", "ar": "الطلاب", "zh": "学生", "hi": "छात्र", "de": "Schüler", "ja": "生徒"}, "staff_title": {"en": "Students", "id": "Siswa", "es": "Estudiantes", "fr": "Élèves", "pt": "Alunos", "ar": "الطلاب", "zh": "学生", "hi": "छात्र", "de": "Schüler", "ja": "生徒"}, "staff_noemp": {"en": "No students. Import in Setup.", "id": "Belum ada siswa. Impor di Atur.", "es": "Sin estudiantes. Importe en Config.", "fr": "Aucun élève. Importez dans Réglages.", "pt": "Sem alunos. Importe em Config.", "ar": "لا يوجد طلاب. استورد من الإعدادات.", "zh": "暂无学生，请在设置中导入。", "hi": "कोई छात्र नहीं। सेटअप में आयात करें।", "de": "Keine Schüler. Im Setup importieren.", "ja": "生徒がいません。設定でインポートしてください。"}, "absent_noemp": {"en": "No students loaded. Import in Setup first.", "id": "Belum ada siswa. Impor dulu di Atur.", "es": "Sin estudiantes. Importe primero en Config.", "fr": "Aucun élève. Importez d’abord dans Réglages.", "pt": "Sem alunos. Importe primeiro em Config.", "ar": "لا يوجد طلاب. استورد أولاً من الإعدادات.", "zh": "暂无学生，请先在设置中导入。", "hi": "कोई छात्र नहीं। पहले सेटअप में आयात करें।", "de": "Keine Schüler. Zuerst im Setup importieren.", "ja": "生徒がいません。先に設定でインポートしてください。"}, "badges_noemp2": {"en": "Import students in Setup first.", "id": "Impor siswa dulu di Atur.", "es": "Importe estudiantes primero en Config.", "fr": "Importez d’abord les élèves.", "pt": "Importe alunos primeiro.", "ar": "استورد الطلاب أولاً.", "zh": "请先在设置中导入学生。", "hi": "पहले सेटअप में छात्र आयात करें।", "de": "Zuerst Schüler im Setup importieren.", "ja": "先に設定で生徒をインポートしてください。"}, "setup_import_title": {"en": "📂 Import Students", "id": "📂 Impor Siswa", "es": "📂 Importar estudiantes", "fr": "📂 Importer les élèves", "pt": "📂 Importar alunos", "ar": "📂 استيراد الطلاب", "zh": "📂 导入学生", "hi": "📂 छात्र आयात करें", "de": "📂 Schüler importieren", "ja": "📂 生徒をインポート"}, "setup_save": {"en": "✓ Save Students", "id": "✓ Simpan Siswa", "es": "✓ Guardar estudiantes", "fr": "✓ Enregistrer les élèves", "pt": "✓ Salvar alunos", "ar": "✓ حفظ الطلاب", "zh": "✓ 保存学生", "hi": "✓ छात्र सहेजें", "de": "✓ Schüler speichern", "ja": "✓ 生徒を保存"}, "toast_loaded": {"en": "students loaded", "id": "siswa dimuat", "es": "estudiantes cargados", "fr": "élèves chargés", "pt": "alunos carregados", "ar": "تم تحميل الطلاب", "zh": "名学生已加载", "hi": "छात्र लोड हुए", "de": "Schüler geladen", "ja": "名の生徒を読み込みました"}, "toast_savedcloud": {"en": "students saved to the cloud.", "id": "siswa disimpan ke cloud.", "es": "estudiantes guardados en la nube.", "fr": "élèves enregistrés dans le cloud.", "pt": "alunos salvos na nuvem.", "ar": "تم حفظ الطلاب في السحابة.", "zh": "名学生已保存到云端。", "hi": "छात्र क्लाउड में सहेजे गए।", "de": "Schüler in der Cloud gespeichert.", "ja": "名の生徒をクラウドに保存しました。"}, "result_checkin": {"en": "Present", "id": "Hadir", "es": "Presente", "fr": "Présent", "pt": "Presente", "ar": "حاضر", "zh": "出席", "hi": "उपस्थित", "de": "Anwesend", "ja": "出席"}, "toast_checkedin": {"en": "marked present", "id": "ditandai hadir", "es": "marcado como presente", "fr": "marqué présent", "pt": "marcado como presente", "ar": "تم تسجيله حاضرًا", "zh": "已标记出席", "hi": "उपस्थित चिह्नित", "de": "als anwesend markiert", "ja": "を出席として記録しました"}, "toast_alreadydone": {"en": "already marked present today", "id": "sudah ditandai hadir hari ini", "es": "ya marcado como presente hoy", "fr": "déjà marqué présent aujourd’hui", "pt": "já marcado como presente hoje", "ar": "تم تسجيله حاضرًا بالفعل اليوم", "zh": "今天已标记出席", "hi": "आज पहले से उपस्थित चिह्नित", "de": "heute bereits als anwesend markiert", "ja": "本日はすでに出席として記録されています"}, "scan_hint": {"en": "One scan marks the student present for today.", "id": "Satu pemindaian menandai siswa hadir hari ini.", "es": "Un escaneo marca al estudiante como presente hoy.", "fr": "Un scan marque l’élève présent pour aujourd’hui.", "pt": "Uma leitura marca o aluno como presente hoje.", "ar": "يحدد مسح واحد الطالب كحاضر لهذا اليوم.", "zh": "一次扫描即可将学生标记为今日出席。", "hi": "एक स्कैन छात्र को आज के लिए उपस्थित चिह्नित करता है।", "de": "Ein Scan markiert den Schüler für heute als anwesend.", "ja": "一度のスキャンで生徒を本日出席として記録します。"}, "setup_data_desc": {"en": "Export logs or clear data when starting a new period. Student list is separate from the attendance log.", "id": "Ekspor log atau hapus data saat memulai periode baru. Daftar siswa terpisah dari log kehadiran.", "es": "Exporte registros o borre datos al iniciar un nuevo período. La lista de estudiantes es independiente del registro de asistencia.", "fr": "Exportez les journaux ou effacez les données pour une nouvelle période. La liste des élèves est séparée du journal de présence.", "pt": "Exporte registros ou limpe dados ao iniciar um novo período. A lista de alunos é separada do registro de presença.", "ar": "قم بتصدير السجلات أو مسح البيانات عند بدء فترة جديدة. قائمة الطلاب منفصلة عن سجل الحضور.", "zh": "开始新周期时可导出日志或清除数据。学生名单与出勤记录是分开的。", "hi": "नई अवधि शुरू करते समय लॉग निर्यात करें या डेटा साफ़ करें। छात्र सूची उपस्थिति लॉग से अलग है।", "de": "Protokolle exportieren oder Daten löschen, wenn ein neuer Zeitraum beginnt. Die Schülerliste ist vom Anwesenheitsprotokoll getrennt.", "ja": "新しい期間を始める際は、ログを書き出すかデータを消去できます。生徒リストは出勤記録とは別に管理されます。"}, "setup_import_desc": {"en": "Upload an Excel (.xlsx) or CSV file. Data saves to the cloud — you only need to do this once. Only the Name column is required; ID and Class/Grade are optional.", "id": "Unggah file Excel (.xlsx) atau CSV. Data tersimpan di cloud — cukup sekali saja. Hanya kolom Nama yang wajib; ID dan Kelas opsional.", "es": "Suba un archivo Excel (.xlsx) o CSV. Los datos se guardan en la nube; solo necesita hacerlo una vez. Solo la columna Nombre es obligatoria; ID y Clase son opcionales.", "fr": "Importez un fichier Excel (.xlsx) ou CSV. Les données sont sauvegardées dans le cloud — une seule fois suffit. Seule la colonne Nom est requise ; ID et Classe sont facultatifs.", "pt": "Envie um arquivo Excel (.xlsx) ou CSV. Os dados são salvos na nuvem — basta fazer isso uma vez. Apenas a coluna Nome é obrigatória; ID e Turma são opcionais.", "ar": "قم بتحميل ملف Excel (.xlsx) أو CSV. تُحفظ البيانات في السحابة، وتحتاج لفعل ذلك مرة واحدة فقط. عمود الاسم مطلوب فقط؛ الرقم والصف اختياريان.", "zh": "上传 Excel（.xlsx）或 CSV 文件。数据将保存到云端，只需上传一次。仅\"姓名\"列为必填，编号和班级为可选。", "hi": "Excel (.xlsx) या CSV फ़ाइल अपलोड करें। डेटा क्लाउड में सहेजा जाता है — केवल एक बार करना होगा। केवल नाम कॉलम आवश्यक है; आईडी और कक्षा वैकल्पिक हैं।", "de": "Excel- (.xlsx) oder CSV-Datei hochladen. Daten werden in der Cloud gespeichert — nur einmal nötig. Nur die Spalte \"Name\" ist erforderlich; ID und Klasse sind optional.", "ja": "Excel（.xlsx）またはCSVファイルをアップロードしてください。データはクラウドに保存され、一度だけで済みます。「名前」列のみ必須で、IDとクラスは任意です。"}, "setup_deptcol": {"en": "Class / Grade (optional)", "id": "Kelas (opsional)", "es": "Clase (opcional)", "fr": "Classe (facultatif)", "pt": "Turma (opcional)", "ar": "الصف (اختياري)", "zh": "班级（可选）", "hi": "कक्षा (वैकल्पिक)", "de": "Klasse (optional)", "ja": "クラス（任意）"}, "onboard_step3_desc": {"en": "Leave this device on the Scan tab. One scan marks a student present for the day — fully automatic, no buttons to press. Use the Absent tab to record who didn’t come and why.", "id": "Biarkan perangkat ini di tab Pindai. Satu pemindaian menandai siswa hadir hari itu — otomatis, tanpa tombol. Gunakan tab Absen untuk mencatat siapa yang tidak hadir dan alasannya.", "es": "Deje este dispositivo en la pestaña Escanear. Un solo escaneo marca a un estudiante como presente ese día — totalmente automático. Use la pestaña Ausente para registrar quién no vino y por qué.", "fr": "Laissez cet appareil sur l’onglet Scanner. Un seul scan marque un élève présent pour la journée — entièrement automatique. Utilisez l’onglet Absent pour noter qui n’est pas venu et pourquoi.", "pt": "Deixe este dispositivo na aba Escanear. Uma única leitura marca um aluno como presente no dia — totalmente automático. Use a aba Ausente para registrar quem não veio e por quê.", "ar": "اترك هذا الجهاز على تبويب المسح. يحدد مسح واحد الطالب كحاضر لهذا اليوم — تلقائيًا بالكامل. استخدم تبويب الغياب لتسجيل من لم يأت وسبب ذلك.", "zh": "将此设备保持在\"扫描\"标签页。一次扫描即可将学生标记为当天出席——完全自动，无需按任何按钮。使用\"缺席\"标签页记录未到学生及原因。", "hi": "इस डिवाइस को स्कैन टैब पर छोड़ दें। एक स्कैन छात्र को उस दिन के लिए उपस्थित चिह्नित करता है — पूरी तरह स्वचालित। किसने नहीं आया और क्यों, यह दर्ज करने के लिए अनुपस्थित टैब का उपयोग करें।", "de": "Lasse dieses Gerät im Scan-Tab. Ein Scan markiert einen Schüler für den Tag als anwesend — vollautomatisch. Nutze den Abwesend-Tab, um zu erfassen, wer nicht kam und warum.", "ja": "このデバイスをスキャンタブのままにしておいてください。一度のスキャンで生徒を当日出席として記録します（完全自動）。欠席タブで、来なかった生徒とその理由を記録できます。"}};
+const I18N_STUDENT = {"nav_staff": {"en": "Students", "id": "Siswa", "es": "Estudiantes", "fr": "Élèves", "pt": "Alunos", "ar": "الطلاب", "zh": "学生", "hi": "छात्र", "de": "Schüler", "ja": "生徒"}, "staff_title": {"en": "Students", "id": "Siswa", "es": "Estudiantes", "fr": "Élèves", "pt": "Alunos", "ar": "الطلاب", "zh": "学生", "hi": "छात्र", "de": "Schüler", "ja": "生徒"}, "staff_noemp": {"en": "No students. Import in Setup.", "id": "Belum ada siswa. Impor di Atur.", "es": "Sin estudiantes. Importe en Config.", "fr": "Aucun élève. Importez dans Réglages.", "pt": "Sem alunos. Importe em Config.", "ar": "لا يوجد طلاب. استورد من الإعدادات.", "zh": "暂无学生，请在设置中导入。", "hi": "कोई छात्र नहीं। सेटअप में आयात करें।", "de": "Keine Schüler. Im Setup importieren.", "ja": "生徒がいません。設定でインポートしてください。"}, "absent_noemp": {"en": "No students loaded. Import in Setup first.", "id": "Belum ada siswa. Impor dulu di Atur.", "es": "Sin estudiantes. Importe primero en Config.", "fr": "Aucun élève. Importez d'abord dans Réglages.", "pt": "Sem alunos. Importe primeiro em Config.", "ar": "لا يوجد طلاب. استورد أولاً من الإعدادات.", "zh": "暂无学生，请先在设置中导入。", "hi": "कोई छात्र नहीं। पहले सेटअप में आयात करें।", "de": "Keine Schüler. Zuerst im Setup importieren.", "ja": "生徒がいません。先に設定でインポートしてください。"}, "badges_noemp2": {"en": "Import students in Setup first.", "id": "Impor siswa dulu di Atur.", "es": "Importe estudiantes primero en Config.", "fr": "Importez d'abord les élèves.", "pt": "Importe alunos primeiro.", "ar": "استورد الطلاب أولاً.", "zh": "请先在设置中导入学生。", "hi": "पहले सेटअप में छात्र आयात करें।", "de": "Zuerst Schüler im Setup importieren.", "ja": "先に設定で生徒をインポートしてください。"}, "setup_save": {"en": "✓ Save Students", "id": "✓ Simpan Siswa", "es": "✓ Guardar estudiantes", "fr": "✓ Enregistrer les élèves", "pt": "✓ Salvar alunos", "ar": "✓ حفظ الطلاب", "zh": "✓ 保存学生", "hi": "✓ छात्र सहेजें", "de": "✓ Schüler speichern", "ja": "✓ 生徒を保存"}, "toast_loaded": {"en": "students loaded", "id": "siswa dimuat", "es": "estudiantes cargados", "fr": "élèves chargés", "pt": "alunos carregados", "ar": "تم تحميل الطلاب", "zh": "名学生已加载", "hi": "छात्र लोड हुए", "de": "Schüler geladen", "ja": "名の生徒を読み込みました"}, "toast_savedcloud": {"en": "students saved to the cloud.", "id": "siswa disimpan ke cloud.", "es": "estudiantes guardados en la nube.", "fr": "élèves enregistrés dans le cloud.", "pt": "alunos salvos na nuvem.", "ar": "تم حفظ الطلاب في السحابة.", "zh": "名学生已保存到云端。", "hi": "छात्र क्लाउड में सहेजे गए।", "de": "Schüler in der Cloud gespeichert.", "ja": "名の生徒をクラウドに保存しました。"}, "result_checkin": {"en": "Present", "id": "Hadir", "es": "Presente", "fr": "Présent", "pt": "Presente", "ar": "حاضر", "zh": "出席", "hi": "उपस्थित", "de": "Anwesend", "ja": "出席"}, "toast_checkedin": {"en": "marked present", "id": "ditandai hadir", "es": "marcado como presente", "fr": "marqué présent", "pt": "marcado como presente", "ar": "تم تسجيله حاضرًا", "zh": "已标记出席", "hi": "उपस्थित चिह्नित", "de": "als anwesend markiert", "ja": "を出席として記録しました"}, "toast_alreadydone": {"en": "already marked present today", "id": "sudah ditandai hadir hari ini", "es": "ya marcado como presente hoy", "fr": "déjà marqué présent aujourd'hui", "pt": "já marcado como presente hoje", "ar": "تم تسجيله حاضرًا بالفعل اليوم", "zh": "今天已标记出席", "hi": "आज पहले से उपस्थित चिह्नित", "de": "heute bereits als anwesend markiert", "ja": "本日はすでに出席として記録されています"}, "scan_hint": {"en": "One scan marks the student present for today.", "id": "Satu pemindaian menandai siswa hadir hari ini.", "es": "Un escaneo marca al estudiante como presente hoy.", "fr": "Un scan marque l'élève présent pour aujourd'hui.", "pt": "Uma leitura marca o aluno como presente hoje.", "ar": "يحدد مسح واحد الطالب كحاضر لهذا اليوم.", "zh": "一次扫描即可将学生标记为今日出席。", "hi": "एक स्कैन छात्र को आज के लिए उपस्थित चिह्नित करता है।", "de": "Ein Scan markiert den Schüler für heute als anwesend.", "ja": "一度のスキャンで生徒を本日出席として記録します。"}, "setup_deptcol": {"en": "Class / Grade (optional)", "id": "Kelas (opsional)", "es": "Clase (opcional)", "fr": "Classe (facultatif)", "pt": "Turma (opcional)", "ar": "الصف (اختياري)", "zh": "班级（可选）", "hi": "कक्षा (वैकल्पिक)", "de": "Klasse (optional)", "ja": "クラス（任意）"}};
 for(const k in I18N_STUDENT) I18N[k] = I18N_STUDENT[k];
 const LANG_NAMES = {"id": "Bahasa Indonesia", "ms": "Bahasa Melayu", "tl": "Filipino", "th": "ภาษาไทย", "vi": "Tiếng Việt", "km": "ភាសាខ្មែរ", "my": "မြန်မာဘာသာ", "zh": "中文（简体）", "zh-TW": "中文（繁體）", "ja": "日本語", "ko": "한국어", "hi": "हिन्दी", "bn": "বাংলা", "ur": "اردو", "ta": "தமிழ்", "te": "తెలుగు", "mr": "मराठी", "gu": "ગુજરાતી", "ar": "العربية", "fa": "فارسی", "tr": "Türkçe", "he": "עברית", "en": "English", "es": "Español", "fr": "Français", "pt": "Português", "de": "Deutsch", "it": "Italiano", "nl": "Nederlands", "pl": "Polski", "ro": "Română", "sv": "Svenska", "no": "Norsk", "da": "Dansk", "fi": "Suomi", "ru": "Русский", "uk": "Українська", "cs": "Čeština", "sk": "Slovenčina", "hu": "Magyar", "bg": "Български", "hr": "Hrvatski", "sr": "Srpski", "el": "Ελληνικά", "sw": "Kiswahili", "am": "አማርኛ", "ha": "Hausa", "yo": "Yorùbá", "ig": "Igbo", "zu": "isiZulu", "af": "Afrikaans"};
 const SUPPORTED_LANGS = Object.keys(LANG_NAMES);
@@ -903,28 +920,19 @@ function dismissOnboard(){
   if(settingsDoc) setDoc(settingsDoc, {onboarded:true}, {merge:true}).catch(err=>console.error(err));
 }
 
-// ── BACKUP POPUP ──────────────────────────────────────────────────────
-function showBackupPopup(){
-  document.getElementById('backup-overlay').classList.add('show');
-  document.getElementById('backup-msg').className='status-msg';
-}
-function confirmBackupSignIn(){
-  const msg=document.getElementById('backup-msg');
-  msg.textContent='Opening Google sign-in…';
-  msg.className='status-msg msg-ok';
+// ── GOOGLE SIGN IN ────────────────────────────────────────────────────
+function doLogin(){
+  const msg=document.getElementById('login-msg');
+  msg.className='status-msg';
   signInWithPopup(auth, googleProvider)
-    .then(()=>{
-      document.getElementById('backup-overlay').classList.remove('show');
-    })
     .catch(err=>{
+      console.error(err);
       let m=t('toast_signinfail');
       if(err.code==='auth/popup-blocked') m=t('toast_popupblocked');
       if(err.code==='auth/unauthorized-domain') m=t('toast_baddomain');
       msg.textContent=m; msg.className='status-msg msg-err';
     });
 }
-
-function doLogin(){ showBackupPopup(); }
 
 function doLogout(){
   signOut(auth);
@@ -952,6 +960,7 @@ function attachListeners(){
     employees = snap.docs.map(d=>d.data());
     lsSave('hadir_emp', employees);
     setConnStatus('cloud');
+    renderPeopleList();
     renderStaff(); renderAbsent(); renderRecap(); renderTopChips();
   }, err => { console.error(err); setConnStatus('local'); });
 
@@ -1523,6 +1532,99 @@ function renderLog(){
 // ═══════════════════════════════════════════════════════════
 // FILE IMPORT
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// PEOPLE PORTAL — direct name entry (no Excel needed)
+// ═══════════════════════════════════════════════════════════
+function renderPeopleList(){
+  const list = document.getElementById('people-list');
+  const count = document.getElementById('people-count');
+  if(!list) return;
+  count.textContent = `${employees.length} ${employees.length===1?'person':'people'}`;
+  if(!employees.length){
+    list.innerHTML = '<p style="font-size:.78rem;color:var(--muted);padding:6px 0">No one added yet.</p>';
+    return;
+  }
+  list.innerHTML = employees.map((e,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;
+      background:var(--lift);border-radius:7px;font-size:.8rem">
+      <span style="font-family:var(--mono);font-size:.68rem;color:var(--muted);width:28px;flex-shrink:0">${e.id}</span>
+      <span style="flex:1;font-weight:600">${esc(e.name)}</span>
+      ${e.department?`<span style="font-size:.72rem;color:var(--muted)">${esc(e.department)}</span>`:''}
+      <button onclick="removePerson(${i})" style="background:none;border:none;color:var(--muted);
+        cursor:pointer;font-size:1rem;padding:0 2px;line-height:1">×</button>
+    </div>`).join('');
+}
+
+function addOnePerson(){
+  const nameEl = document.getElementById('add-name');
+  const deptEl = document.getElementById('add-dept');
+  const name = nameEl.value.trim();
+  const dept = deptEl.value.trim();
+  if(!name){ nameEl.focus(); return; }
+  const id = '#' + (employees.length + 1);
+  employees.push({id, name, department:dept});
+  lsSave('hadir_emp', employees);
+  nameEl.value = ''; deptEl.value = '';
+  nameEl.focus();
+  renderPeopleList();
+  saveEmployeesToCloud();
+  renderStaff(); renderAbsent(); renderTopChips();
+}
+
+function addBulkNames(){
+  const raw = (document.getElementById('bulk-names').value || '').trim();
+  if(!raw) return;
+  const lines = raw.split('\n').map(l=>l.trim()).filter(Boolean);
+  let added = 0;
+  lines.forEach(line=>{
+    // support "Name, Dept" or "Name\tDept"
+    const parts = line.split(/[,\t]/).map(p=>p.trim());
+    const name = parts[0];
+    const dept = parts[1] || '';
+    if(!name) return;
+    employees.push({id:'#'+(employees.length+1), name, department:dept});
+    added++;
+  });
+  lsSave('hadir_emp', employees);
+  document.getElementById('bulk-names').value = '';
+  document.getElementById('people-msg').textContent = `✓ Added ${added} people`;
+  document.getElementById('people-msg').className = 'status-msg msg-ok';
+  setTimeout(()=>{ const m=document.getElementById('people-msg'); if(m) m.className='status-msg'; }, 2500);
+  renderPeopleList();
+  saveEmployeesToCloud();
+  renderStaff(); renderAbsent(); renderTopChips();
+}
+
+function removePerson(idx){
+  employees.splice(idx, 1);
+  // re-number IDs that were auto-generated
+  employees = employees.map((e,i)=>({...e, id: e.id.startsWith('#') ? '#'+(i+1) : e.id}));
+  lsSave('hadir_emp', employees);
+  renderPeopleList();
+  saveEmployeesToCloud();
+  renderStaff(); renderAbsent(); renderTopChips();
+}
+
+function clearPeopleList(){
+  if(!confirm('Remove everyone from the list? Attendance records stay.')) return;
+  employees = [];
+  lsSave('hadir_emp', employees);
+  renderPeopleList();
+  if(empCol) wipeCollection(empCol).catch(console.error);
+  renderStaff(); renderAbsent(); renderTopChips();
+}
+
+async function saveEmployeesToCloud(){
+  if(!empCol || !employees.length) return;
+  try{
+    const existing = await getDocs(empCol);
+    let batch = writeBatch(db), ops = 0;
+    for(const d of existing.docs){ batch.delete(d.ref); ops++; if(ops>=400){ await batch.commit(); batch=writeBatch(db); ops=0; } }
+    for(const e of employees){ batch.set(doc(empCol, sanitizeId(e.id)), e); ops++; if(ops>=400){ await batch.commit(); batch=writeBatch(db); ops=0; } }
+    await batch.commit();
+  } catch(err){ console.error('cloud sync:', err); }
+}
+
 function handleFile(input){
   const file=input.files[0]; if(!file) return;
   const reader=new FileReader();
@@ -1711,6 +1813,7 @@ function goTab(name){
   if(name==='absent') renderAbsent();
   if(name==='recap')  renderRecap();
   if(name==='log')    renderLog();
+  if(name==='setup')  renderPeopleList();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1749,6 +1852,7 @@ try{
 }catch(e){ applyLang('en', false); }
 renderTodayList();
 renderTopChips();
+renderPeopleList();
 // show onboarding for brand-new visitors even before sign-in
 if(!localStorage.getItem('hadir_onboarded')) showOnboard();
 
@@ -1758,7 +1862,8 @@ Object.assign(window, {
   genBadges, goTab, handleFile, markAbsent, renderAbsent, renderLog,
   renderRecap, renderStaff, startScan, stopScan, unmarkAbsent,
   doLogin, doLogout, setTheme, toggleTheme, setLang, showOnboard, dismissOnboard,
-  chooseCloud, chooseLocal, showBackupPopup, confirmBackupSignIn
+  chooseCloud, chooseLocal,
+  addOnePerson, addBulkNames, removePerson, clearPeopleList
 });
 </script>
 </body>
