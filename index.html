@@ -857,8 +857,8 @@ onAuthStateChanged(auth, user => {
   updateAccountUI(user);
 
   if(user){
-    empCol = collection(db,'users',user.uid,'employees');
-    logCol = collection(db,'users',user.uid,'logs');
+    empCol = collection(db,'users',user.uid,'stu_employees');
+    logCol = collection(db,'users',user.uid,'stu_logs');
     settingsDoc = doc(db,'users',user.uid,'meta','settings');
     migrateLocalToCloud().then(()=>attachListeners());
     attachSettingsListener();
@@ -867,7 +867,7 @@ onAuthStateChanged(auth, user => {
     if(unsubLog){ unsubLog(); unsubLog=null; }
     if(unsubSettings){ unsubSettings(); unsubSettings=null; }
     empCol=null; logCol=null; settingsDoc=null;
-    employees=lsLoad('hadir_emp',[]); scanLog=lsLoad('hadir_log',[]);
+    employees=lsLoad('hadir_stu_emp',[]); scanLog=lsLoad('hadir_stu_log',[]);
     setConnStatus('local'); renderAll();
   }
 });
@@ -942,8 +942,8 @@ function doLogout(){
 // ═══════════════════════════════════════════════════════════
 // STATE — localStorage-first, optional Firestore sync
 // ═══════════════════════════════════════════════════════════
-let employees = JSON.parse(localStorage.getItem('hadir_emp') || '[]');
-let scanLog   = JSON.parse(localStorage.getItem('hadir_log') || '[]');
+let employees = JSON.parse(localStorage.getItem('hadir_stu_emp') || '[]');
+let scanLog   = JSON.parse(localStorage.getItem('hadir_stu_log') || '[]');
 let rawRows=[], rawCols=[];
 let qrScanner=null, scanning=false;
 let lastScanRaw='', lastScanAt=0;
@@ -959,7 +959,7 @@ function attachListeners(){
   if(!empCol||!logCol) return;
   unsubEmp = onSnapshot(empCol, snap => {
     employees = snap.docs.map(d=>d.data());
-    lsSave('hadir_emp', employees);
+    lsSave('hadir_stu_emp', employees);
     setConnStatus('cloud');
     renderPeopleList();
     renderStaff(); renderAbsent(); renderRecap(); renderTopChips();
@@ -967,7 +967,7 @@ function attachListeners(){
 
   unsubLog = onSnapshot(query(logCol, orderBy('time','desc')), snap => {
     scanLog = snap.docs.map(d=>({ ...d.data(), _docId:d.id }));
-    lsSave('hadir_log', scanLog);
+    lsSave('hadir_stu_log', scanLog);
     setConnStatus('cloud');
     renderTodayList(); renderTopChips();
     if(document.getElementById('p-staff').classList.contains('active'))  renderStaff();
@@ -992,7 +992,7 @@ function setConnStatus(mode){
 // ── write helper — writes to Firestore if signed in, else just localStorage ──
 async function writeLog(entry){
   scanLog.unshift(entry);
-  lsSave('hadir_log', scanLog);
+  lsSave('hadir_stu_log', scanLog);
   if(logCol){
     try{ await addDoc(logCol, entry); }
     catch(err){ console.error(err); }
@@ -1000,7 +1000,7 @@ async function writeLog(entry){
 }
 async function deleteLogEntry(entry){
   scanLog = scanLog.filter(e=>e!==entry && !(e._docId && e._docId===entry._docId));
-  lsSave('hadir_log', scanLog);
+  lsSave('hadir_stu_log', scanLog);
   if(logCol && entry._docId){
     try{ await deleteDoc(doc(logCol, entry._docId)); }
     catch(err){ console.error(err); }
@@ -1009,8 +1009,8 @@ async function deleteLogEntry(entry){
 
 // ── migration: push localStorage data up to Firestore after sign-in ──────
 async function migrateLocalToCloud(){
-  const localEmp = lsLoad('hadir_emp', []);
-  const localLog = lsLoad('hadir_log', []);
+  const localEmp = lsLoad('hadir_stu_emp', []);
+  const localLog = lsLoad('hadir_stu_log', []);
   if(!empCol || !logCol) return;
 
   const [empSnap, logSnap] = await Promise.all([getDocs(empCol), getDocs(logCol)]);
@@ -1041,7 +1041,7 @@ async function uploadLocalToCloud(localEmp, localLog){
     let b=writeBatch(db), ops=0;
     for(const e of localLog){
       const {_docId,...clean}=e;
-      b.set(doc(collection(db,'users',currentUser.uid,'logs')), clean);
+      b.set(doc(collection(db,'users',currentUser.uid,'stu_logs')), clean);
       ops++; if(ops>=400){ await b.commit(); b=writeBatch(db); ops=0; }
     }
     await b.commit();
@@ -1059,12 +1059,12 @@ function hideMergeDialog(){ document.getElementById('merge-overlay').classList.r
 async function chooseCloud(){
   hideMergeDialog();
   // wipe local, trust cloud (listeners will populate)
-  lsSave('hadir_emp',[]); lsSave('hadir_log',[]);
+  lsSave('hadir_stu_emp',[]); lsSave('hadir_stu_log',[]);
   toast('Using cloud data','info');
 }
 async function chooseLocal(){
   hideMergeDialog();
-  const localEmp=lsLoad('hadir_emp',[]); const localLog=lsLoad('hadir_log',[]);
+  const localEmp=lsLoad('hadir_stu_emp',[]); const localLog=lsLoad('hadir_stu_log',[]);
   await uploadLocalToCloud(localEmp, localLog);
   toast('Local data uploaded to cloud','info');
 }
@@ -1398,7 +1398,7 @@ function exportRecap(){
     row.push(cnt.H,cnt.S,cnt.P,cnt.A);
     rows.push(row);
   });
-  dlCSV(rows, `hadir_recap_${year}-${String(month).padStart(2,'0')}.csv`);
+  dlCSV(rows, `hadir_stu_recap_${year}-${String(month).padStart(2,'0')}.csv`);
   toast(t('toast_exported'),'info');
 }
 
@@ -1564,7 +1564,7 @@ function addOnePerson(){
   if(!name){ nameEl.focus(); return; }
   const id = '#' + (employees.length + 1);
   employees.push({id, name, department:dept});
-  lsSave('hadir_emp', employees);
+  lsSave('hadir_stu_emp', employees);
   nameEl.value = ''; deptEl.value = '';
   nameEl.focus();
   renderPeopleList();
@@ -1586,7 +1586,7 @@ function addBulkNames(){
     employees.push({id:'#'+(employees.length+1), name, department:dept});
     added++;
   });
-  lsSave('hadir_emp', employees);
+  lsSave('hadir_stu_emp', employees);
   document.getElementById('bulk-names').value = '';
   document.getElementById('people-msg').textContent = `✓ Added ${added} people`;
   document.getElementById('people-msg').className = 'status-msg msg-ok';
@@ -1600,7 +1600,7 @@ function removePerson(idx){
   employees.splice(idx, 1);
   // re-number IDs that were auto-generated
   employees = employees.map((e,i)=>({...e, id: e.id.startsWith('#') ? '#'+(i+1) : e.id}));
-  lsSave('hadir_emp', employees);
+  lsSave('hadir_stu_emp', employees);
   renderPeopleList();
   saveEmployeesToCloud();
   renderStaff(); renderAbsent(); renderTopChips();
@@ -1609,7 +1609,7 @@ function removePerson(idx){
 function clearPeopleList(){
   if(!confirm('Remove everyone from the list? Attendance records stay.')) return;
   employees = [];
-  lsSave('hadir_emp', employees);
+  lsSave('hadir_stu_emp', employees);
   renderPeopleList();
   if(empCol) wipeCollection(empCol).catch(console.error);
   renderStaff(); renderAbsent(); renderTopChips();
@@ -1695,7 +1695,7 @@ async function confirmImport(){
 
   // always save locally first
   employees = imported;
-  lsSave('hadir_emp', imported);
+  lsSave('hadir_stu_emp', imported);
   document.getElementById('col-mapper').style.display='none';
 
   if(empCol){
@@ -1733,7 +1733,7 @@ function exportLog(){
   scanLog.forEach(e=>rows.push([e.id,e.name,e.dept||'',
     e.type==='in'?t('result_checkin'):e.type==='out'?t('result_checkout'):t('staff_absent'),
     e.date,fmtDT(new Date(e.time)),e.type==='absent'?reasonLabel(e):'']));
-  dlCSV(rows,`hadir_log_${todayStr()}.csv`);
+  dlCSV(rows,`hadir_stu_log_${todayStr()}.csv`);
   toast(t('toast_exported'),'info');
 }
 
@@ -1760,7 +1760,7 @@ function exportSummary(){
     e.status||(e.in?t('status_present'):t('status_norecord')),
     e.entry?reasonLabel(e.entry):''
   ]));
-  dlCSV(rows,`hadir_summary_${today}.csv`);
+  dlCSV(rows,`hadir_stu_summary_${today}.csv`);
   toast(t('toast_exported'),'info');
 }
 
@@ -1785,7 +1785,7 @@ async function wipeCollection(col){
 async function clearLog(){
   if(!confirm(t('toast_logcleared')+'?')) return;
   scanLog=[];
-  lsSave('hadir_log',[]);
+  lsSave('hadir_stu_log',[]);
   if(logCol) try{ await wipeCollection(logCol); }catch(e){ console.error(e); }
   renderLog(); renderTodayList(); renderTopChips();
   toast(t('toast_logcleared'),'warn');
@@ -1794,7 +1794,7 @@ async function clearLog(){
 async function clearAll(){
   if(!confirm('Delete everything?')) return;
   employees=[]; scanLog=[];
-  lsSave('hadir_emp',[]); lsSave('hadir_log',[]);
+  lsSave('hadir_stu_emp',[]); lsSave('hadir_stu_log',[]);
   if(logCol) try{ await wipeCollection(logCol); }catch(e){ console.error(e); }
   if(empCol) try{ await wipeCollection(empCol); }catch(e){ console.error(e); }
   renderAll(); renderLog(); renderStaff();
